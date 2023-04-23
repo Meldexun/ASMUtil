@@ -3,6 +3,8 @@ plugins {
     id 'eclipse'
 }
 
+java.toolchain.languageVersion = JavaLanguageVersion.of(8)
+
 repositories {
     mavenCentral()
 }
