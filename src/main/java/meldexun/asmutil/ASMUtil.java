@@ -1,68 +1,144 @@
 package meldexun.asmutil;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.AbstractInsnNode;
+import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.FieldInsnNode;
 import org.objectweb.asm.tree.FrameNode;
 import org.objectweb.asm.tree.InsnList;
+import org.objectweb.asm.tree.IntInsnNode;
 import org.objectweb.asm.tree.JumpInsnNode;
 import org.objectweb.asm.tree.LabelNode;
+import org.objectweb.asm.tree.LdcInsnNode;
 import org.objectweb.asm.tree.LineNumberNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.MethodNode;
+import org.objectweb.asm.tree.TypeInsnNode;
 import org.objectweb.asm.tree.VarInsnNode;
 
 public class ASMUtil {
 
 	public static final Logger LOGGER = LogManager.getLogger();
 
-	public static void printMethodInstructions(MethodNode methodNode) {
-		StringBuilder sb = new StringBuilder();
-		int i = 0;
-		for (AbstractInsnNode instruction : methodNode.instructions.toArray()) {
-			sb.append("\n" + insnToString(i++, instruction));
-		}
-		LOGGER.info(sb);
+	private static final Map<Class<? extends AbstractInsnNode>, Function<? extends AbstractInsnNode, String>> INSN_TO_STRING_SERIALIZERS = new HashMap<>();
+	static {
+		register(IntInsnNode.class, insn -> insn.operand);
+		register(VarInsnNode.class, insn -> insn.var);
+		register(TypeInsnNode.class, insn -> insn.desc);
+		register(FieldInsnNode.class, insn -> (insn.owner + " " + insn.name + " " + insn.desc));
+		register(MethodInsnNode.class, insn -> (insn.owner + " " + insn.name + " " + insn.desc));
+		register(JumpInsnNode.class, insn -> insn.label.getLabel());
+		register(LabelNode.class, insn -> insn.getLabel());
+		register(LdcInsnNode.class, insn -> insn.cst);
+		register(FrameNode.class, insn -> (insn.local + " " + insn.stack));
+		register(LineNumberNode.class, insn -> insn.line);
 	}
 
-	public static String insnToString(int index, AbstractInsnNode insn) {
+	private static <T extends AbstractInsnNode> void register(Class<T> type, Function<T, ?> insnToStringSerializer) {
+		INSN_TO_STRING_SERIALIZERS.compute(type, (k, v) -> {
+			if (v != null) {
+				throw new IllegalArgumentException();
+			}
+			return insnToStringSerializer.andThen(Object::toString);
+		});
+	}
+
+	@SuppressWarnings("unchecked")
+	private static <T extends AbstractInsnNode> Function<T, String> get(T insn) {
+		return (Function<T, String>) INSN_TO_STRING_SERIALIZERS.get(insn.getClass());
+	}
+
+	public static String classToString(ClassNode classNode) {
 		StringBuilder sb = new StringBuilder();
-		sb.append(index);
-		while (sb.length() < 5) {
-			sb.append(' ');
-		}
-		sb.append(insn.getOpcode());
-		while (sb.length() < 9) {
-			sb.append(' ');
-		}
-		sb.append(insn.getClass().getSimpleName());
-		while (sb.length() < 24) {
-			sb.append(' ');
-		}
-		if (insn instanceof MethodInsnNode) {
-			sb.append(" " + ((MethodInsnNode) insn).owner);
-			sb.append(" " + ((MethodInsnNode) insn).name);
-			sb.append(" " + ((MethodInsnNode) insn).desc);
-		} else if (insn instanceof VarInsnNode) {
-			sb.append(" " + ((VarInsnNode) insn).var);
-		} else if (insn instanceof FieldInsnNode) {
-			sb.append(" " + ((FieldInsnNode) insn).owner);
-			sb.append(" " + ((FieldInsnNode) insn).name);
-			sb.append(" " + ((FieldInsnNode) insn).desc);
-		} else if (insn instanceof JumpInsnNode) {
-			sb.append(" " + ((JumpInsnNode) insn).label.getLabel());
-		} else if (insn instanceof LabelNode) {
-			sb.append(" " + ((LabelNode) insn).getLabel());
-		} else if (insn instanceof FrameNode) {
-			sb.append(" " + ((FrameNode) insn).local);
-			sb.append(" " + ((FrameNode) insn).stack);
-		} else if (insn instanceof LineNumberNode) {
-			sb.append(" " + ((LineNumberNode) insn).line);
-		}
+		sb.append(classNode.name);
+		sb.append('\n');
+
+		sb.append(classNode.methods.stream()
+				.map(ASMUtil::methodToString)
+				.collect(Collectors.joining("\n\n")));
+
 		return sb.toString();
+	}
+
+	public static String methodToString(MethodNode methodNode) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(methodNode.name);
+		sb.append(' ');
+		sb.append(methodNode.desc);
+		sb.append('\n');
+
+		int i = 0;
+		for (Iterator<AbstractInsnNode> iterator = methodNode.instructions.iterator(); iterator.hasNext();) {
+			AbstractInsnNode insn = iterator.next();
+			StringBuilderUtil.append(sb, i, 3);
+			sb.append(' ');
+			sb.append(instructionToString(insn));
+			if (iterator.hasNext()) {
+				sb.append('\n');
+			}
+			i++;
+		}
+
+		return sb.toString();
+	}
+
+	public static <T extends AbstractInsnNode> String instructionToString(T insn) {
+		StringBuilder sb = new StringBuilder();
+		StringBuilderUtil.append(sb, opcodeName(insn), 15);
+		sb.append(' ');
+		StringBuilderUtil.append(sb, insn.getClass().getSimpleName(), 22);
+		sb.append(' ');
+
+		Function<T, String> insnToStringSerializer = get(insn);
+		if (insnToStringSerializer != null) {
+			sb.append(insnToStringSerializer.apply(insn));
+		}
+
+		return sb.toString();
+	}
+
+	private static String opcodeName(AbstractInsnNode insn) {
+		if (insn instanceof LabelNode) {
+			return "";
+		}
+		if (insn instanceof LineNumberNode) {
+			return "";
+		}
+		if (insn instanceof FrameNode) {
+			return "";
+		}
+		return Arrays.stream(Opcodes.class.getFields())
+				.filter(field -> Modifier.isStatic(field.getModifiers()))
+				.filter(field -> field.getType() == int.class)
+				.filter(field -> !field.getName().startsWith("ASM"))
+				.filter(field -> !field.getName().startsWith("V"))
+				.filter(field -> !field.getName().startsWith("ACC_"))
+				.filter(field -> !field.getName().startsWith("T_"))
+				.filter(field -> !field.getName().startsWith("H_"))
+				.filter(field -> !field.getName().startsWith("F_"))
+				.filter(field -> {
+					try {
+						return field.getInt(null) == insn.getOpcode();
+					} catch (IllegalArgumentException | IllegalAccessException e) {
+						// ignore
+						return false;
+					}
+				})
+				.map(Field::getName)
+				.findFirst()
+				.orElse("UNKNOWN");
 	}
 
 	public static AbstractInsnNode findFirstInsnByOpcode(MethodNode methodNode, int opCode) {
