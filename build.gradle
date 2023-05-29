@@ -20,6 +20,9 @@ dependencies {
 jar {
     archiveBaseName = 'ASMUtil'
     archiveVersion = '1.0.0'
+
+    from rootProject.file('LICENSE')
+
     manifest.attributes([
         'Built-By': 'Meldexun',
         'Specification-Title': 'ASMUtil',
