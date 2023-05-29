@@ -1,13 +1,10 @@
-package meldexun.asmutil.transformer.clazz;
+package meldexun.asmutil2;
 
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
-
-import meldexun.asmutil.transformer.node.ClassNodeTransformer;
-import meldexun.asmutil.transformer.node.MethodNodeTransformer;
 
 public interface IClassTransformerRegistry {
 

@@ -1,4 +1,4 @@
-package meldexun.asmutil.transformer.clazz;
+package meldexun.asmutil2;
 
 public interface IClassTransformer {
 

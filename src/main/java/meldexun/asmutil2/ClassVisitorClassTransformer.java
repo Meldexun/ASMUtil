@@ -1,4 +1,4 @@
-package meldexun.asmutil.transformer.clazz;
+package meldexun.asmutil2;
 
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;

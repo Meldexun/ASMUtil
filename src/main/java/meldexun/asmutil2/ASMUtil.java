@@ -1,4 +1,4 @@
-package meldexun.asmutil;
+package meldexun.asmutil2;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;

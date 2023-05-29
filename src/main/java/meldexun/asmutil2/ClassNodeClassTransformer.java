@@ -1,4 +1,4 @@
-package meldexun.asmutil.transformer.clazz;
+package meldexun.asmutil2;
 
 import java.util.List;
 import java.util.function.Supplier;
@@ -6,8 +6,6 @@ import java.util.function.Supplier;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.tree.ClassNode;
-
-import meldexun.asmutil.transformer.node.ClassNodeTransformer;
 
 public abstract class ClassNodeClassTransformer extends ClassVisitorClassTransformer<ClassNode> {
 

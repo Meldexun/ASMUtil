@@ -1,4 +1,4 @@
-package meldexun.asmutil;
+package meldexun.asmutil2;
 
 class StringBuilderUtil {
 

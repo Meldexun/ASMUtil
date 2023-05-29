@@ -1,11 +1,10 @@
-package meldexun.asmutil.transformer.clazz;
+package meldexun.asmutil2;
 
 import java.util.List;
 import java.util.Map;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import meldexun.asmutil.transformer.node.ClassNodeTransformer;
 
 public abstract class HashMapClassNodeClassTransformer extends ClassNodeClassTransformer {
 

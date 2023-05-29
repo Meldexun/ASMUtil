@@ -1,4 +1,4 @@
-package meldexun.asmutil.transformer.clazz;
+package meldexun.asmutil2;
 
 import java.util.function.BiPredicate;
 import java.util.function.ToIntFunction;

@@ -1,4 +1,4 @@
-package meldexun.asmutil.transformer.clazz;
+package meldexun.asmutil2;
 
 import java.util.function.Function;
 import java.util.function.Predicate;
