@@ -5,8 +5,8 @@
 
 package meldexun.asmutil2;
 
+import java.util.function.BiPredicate;
 import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import org.objectweb.asm.ClassVisitor;
@@ -16,25 +16,25 @@ public interface ITransformInfo<T extends ClassVisitor> {
 
 	T visitor(Lazy<ClassWriter> classWriter);
 
-	boolean transform(T classVisitor);
+	boolean transform(T classVisitor, Lazy<ClassWriter> classWriter);
 
 	int writeFlags();
 
 	int readFlags();
 
 	static <T extends ClassVisitor> ITransformInfo<T> create(Supplier<T> classVisitorFactory,
-			Predicate<T> transformFunction, int writeFlags, int readFlags) {
+			BiPredicate<T, Lazy<ClassWriter>> transformFunction, int writeFlags, int readFlags) {
 		return createTransformInfo(classWriter -> classVisitorFactory.get(), transformFunction, writeFlags, readFlags);
 	}
 
 	static <T extends ClassVisitor> ITransformInfo<T> create(Function<ClassWriter, T> classVisitorFactory,
-			Predicate<T> transformFunction, int writeFlags, int readFlags) {
+			BiPredicate<T, Lazy<ClassWriter>> transformFunction, int writeFlags, int readFlags) {
 		return createTransformInfo(classVisitorFactory.compose(Lazy::get), transformFunction, writeFlags, readFlags);
 	}
 
 	static <T extends ClassVisitor> ITransformInfo<T> createTransformInfo(
-			Function<Lazy<ClassWriter>, T> classVisitorFactory, Predicate<T> transformFunction, int writeFlags,
-			int readFlags) {
+			Function<Lazy<ClassWriter>, T> classVisitorFactory, BiPredicate<T, Lazy<ClassWriter>> transformFunction,
+			int writeFlags, int readFlags) {
 		return new ITransformInfo<T>() {
 
 			@Override
@@ -43,8 +43,8 @@ public interface ITransformInfo<T extends ClassVisitor> {
 			}
 
 			@Override
-			public boolean transform(T classVisitor) {
-				return transformFunction.test(classVisitor);
+			public boolean transform(T classVisitor, Lazy<ClassWriter> classWriter) {
+				return transformFunction.test(classVisitor, classWriter);
 			}
 
 			@Override

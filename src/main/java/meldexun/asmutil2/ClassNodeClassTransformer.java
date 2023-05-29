@@ -22,9 +22,13 @@ public abstract class ClassNodeClassTransformer extends ClassVisitorClassTransfo
 		}
 		int writeFlags = ReductionUtil.intOr(transformers, ClassNodeTransformer::writeFlags);
 		int readFlags = (writeFlags & ClassWriter.COMPUTE_FRAMES) != 0 ? ClassReader.SKIP_FRAMES : 0;
-		return ITransformInfo.create((Supplier<ClassNode>) ClassNode::new,
-				classNode -> ReductionUtil.booleanOr(transformers, classNode, ClassNodeTransformer::transform),
-				writeFlags, readFlags);
+		return ITransformInfo.create((Supplier<ClassNode>) ClassNode::new, (classNode, classWriter) -> {
+			if (!ReductionUtil.booleanOr(transformers, classNode, ClassNodeTransformer::transform)) {
+				return false;
+			}
+			classNode.accept(classWriter.get());
+			return true;
+		}, writeFlags, readFlags);
 	}
 
 	protected abstract List<ClassNodeTransformer> getClassNodeTransformers(String className);

@@ -21,7 +21,7 @@ public abstract class ClassVisitorClassTransformer<T extends ClassVisitor> imple
 		Lazy<ClassWriter> classWriter = new Lazy<>(() -> new ClassWriter(transformInfo.writeFlags()));
 		T classVisitor = transformInfo.visitor(classWriter);
 		classReader.accept(classVisitor, transformInfo.readFlags());
-		if (!transformInfo.transform(classVisitor)) {
+		if (!transformInfo.transform(classVisitor, classWriter)) {
 			return basicClass;
 		}
 		return classWriter.get().toByteArray();
