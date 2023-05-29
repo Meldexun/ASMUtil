@@ -6,7 +6,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -141,138 +140,28 @@ public class ASMUtil {
 				.orElse("UNKNOWN");
 	}
 
-	public static AbstractInsnNode findFirstInsnByOpcode(MethodNode methodNode, int opCode) {
-		return findInsnByOpcode(methodNode, opCode, 0, false);
+	public static <T extends AbstractInsnNode> InsnFinder<T> first(MethodNode methodNode) {
+		return InsnFinder.<T>create().first(methodNode);
 	}
 
-	public static AbstractInsnNode findFirstInsnByOpcode(MethodNode methodNode, int opCode, AbstractInsnNode startExclusive) {
-		return findInsnByOpcode(methodNode, opCode, methodNode.instructions.indexOf(startExclusive) + 1, false);
+	public static <T extends AbstractInsnNode> InsnFinder<T> last(MethodNode methodNode) {
+		return InsnFinder.<T>create().last(methodNode);
 	}
 
-	public static AbstractInsnNode findLastInsnByOpcode(MethodNode methodNode, int opCode) {
-		return findInsnByOpcode(methodNode, opCode, methodNode.instructions.size() - 1, true);
+	public static <T extends AbstractInsnNode> InsnFinder<T> nextExclusive(AbstractInsnNode startExclusive) {
+		return InsnFinder.<T>create().nextExclusive(startExclusive);
 	}
 
-	public static AbstractInsnNode findLastInsnByOpcode(MethodNode methodNode, int opCode, AbstractInsnNode startExclusive) {
-		return findInsnByOpcode(methodNode, opCode, methodNode.instructions.indexOf(startExclusive) - 1, true);
+	public static <T extends AbstractInsnNode> InsnFinder<T> prevExclusive(AbstractInsnNode startExclusive) {
+		return InsnFinder.<T>create().prevExclusive(startExclusive);
 	}
 
-	private static AbstractInsnNode findInsnByOpcode(MethodNode methodNode, int opCode, int startInclusive, boolean reversed) {
-		if (startInclusive < 0 || startInclusive >= methodNode.instructions.size()) {
-			throw new NoSuchElementException();
-		}
-		for (int i = startInclusive; i >= 0 && i < methodNode.instructions.size(); i += reversed ? -1 : 1) {
-			AbstractInsnNode ain = methodNode.instructions.get(i);
-			if (ain.getOpcode() == opCode) {
-				return ain;
-			}
-		}
-		throw new NoSuchElementException();
+	public static <T extends AbstractInsnNode> InsnFinder<T> next(AbstractInsnNode startInclusive) {
+		return InsnFinder.<T>create().next(startInclusive);
 	}
 
-	public static AbstractInsnNode findFirstInsnByType(MethodNode methodNode, int type) {
-		return findInsnByType(methodNode, type, 0, false);
-	}
-
-	public static AbstractInsnNode findFirstInsnByType(MethodNode methodNode, int type, AbstractInsnNode startExclusive) {
-		return findInsnByType(methodNode, type, methodNode.instructions.indexOf(startExclusive) + 1, false);
-	}
-
-	public static AbstractInsnNode findLastInsnByType(MethodNode methodNode, int type) {
-		return findInsnByType(methodNode, type, methodNode.instructions.size() - 1, true);
-	}
-
-	public static AbstractInsnNode findLastInsnByType(MethodNode methodNode, int type, AbstractInsnNode startExclusive) {
-		return findInsnByType(methodNode, type, methodNode.instructions.indexOf(startExclusive) - 1, true);
-	}
-
-	private static AbstractInsnNode findInsnByType(MethodNode methodNode, int type, int startInclusive, boolean reversed) {
-		if (startInclusive < 0 || startInclusive >= methodNode.instructions.size()) {
-			throw new NoSuchElementException();
-		}
-		for (int i = startInclusive; i >= 0 && i < methodNode.instructions.size(); i += reversed ? -1 : 1) {
-			AbstractInsnNode ain = methodNode.instructions.get(i);
-			if (ain.getType() == type) {
-				return ain;
-			}
-		}
-		throw new NoSuchElementException();
-	}
-
-	public static MethodInsnNode findFirstMethodCall(MethodNode methodNode, int opCode, String obfOwner, String obfName, String obfDesc, String owner,
-			String name, String desc) {
-		return findMethodCall(methodNode, opCode, obfOwner, obfName, obfDesc, owner, name, desc, 0, false);
-	}
-
-	public static MethodInsnNode findFirstMethodCall(MethodNode methodNode, int opCode, String obfOwner, String obfName, String obfDesc, String owner,
-			String name, String desc, AbstractInsnNode startExclusive) {
-		return findMethodCall(methodNode, opCode, obfOwner, obfName, obfDesc, owner, name, desc, methodNode.instructions.indexOf(startExclusive) + 1, false);
-	}
-
-	public static MethodInsnNode findLastMethodCall(MethodNode methodNode, int opCode, String obfOwner, String obfName, String obfDesc, String owner,
-			String name, String desc) {
-		return findMethodCall(methodNode, opCode, obfOwner, obfName, obfDesc, owner, name, desc, methodNode.instructions.size() - 1, true);
-	}
-
-	public static MethodInsnNode findLastMethodCall(MethodNode methodNode, int opCode, String obfOwner, String obfName, String obfDesc, String owner,
-			String name, String desc, AbstractInsnNode startExclusive) {
-		return findMethodCall(methodNode, opCode, obfOwner, obfName, obfDesc, owner, name, desc, methodNode.instructions.indexOf(startExclusive) - 1, true);
-	}
-
-	private static MethodInsnNode findMethodCall(MethodNode methodNode, int opCode, String obfOwner, String obfName, String obfDesc, String owner, String name,
-			String desc, int startInclusive, boolean reversed) {
-		if (startInclusive < 0 || startInclusive >= methodNode.instructions.size()) {
-			throw new NoSuchElementException();
-		}
-		for (int i = startInclusive; i >= 0 && i < methodNode.instructions.size(); i += reversed ? -1 : 1) {
-			AbstractInsnNode node = methodNode.instructions.get(i);
-			if (node instanceof MethodInsnNode && node.getOpcode() == opCode) {
-				MethodInsnNode methodInsnNode = (MethodInsnNode) node;
-				if ((methodInsnNode.owner.equals(obfOwner) && methodInsnNode.name.equals(obfName) && methodInsnNode.desc.equals(obfDesc))
-						|| (methodInsnNode.owner.equals(owner) && methodInsnNode.name.equals(name) && methodInsnNode.desc.equals(desc))) {
-					return methodInsnNode;
-				}
-			}
-		}
-		throw new NoSuchElementException();
-	}
-
-	public static FieldInsnNode findFirstFieldCall(MethodNode methodNode, int opCode, String obfOwner, String obfName, String obfDesc, String owner,
-			String name, String desc) {
-		return findFieldCall(methodNode, opCode, obfOwner, obfName, obfDesc, owner, name, desc, 0, false);
-	}
-
-	public static FieldInsnNode findFirstFieldCall(MethodNode methodNode, int opCode, String obfOwner, String obfName, String obfDesc, String owner,
-			String name, String desc, AbstractInsnNode startExclusive) {
-		return findFieldCall(methodNode, opCode, obfOwner, obfName, obfDesc, owner, name, desc, methodNode.instructions.indexOf(startExclusive) + 1, false);
-	}
-
-	public static FieldInsnNode findLastFieldCall(MethodNode methodNode, int opCode, String obfOwner, String obfName, String obfDesc, String owner, String name,
-			String desc) {
-		return findFieldCall(methodNode, opCode, obfOwner, obfName, obfDesc, owner, name, desc, methodNode.instructions.size() - 1, true);
-	}
-
-	public static FieldInsnNode findLastFieldCall(MethodNode methodNode, int opCode, String obfOwner, String obfName, String obfDesc, String owner, String name,
-			String desc, AbstractInsnNode startExclusive) {
-		return findFieldCall(methodNode, opCode, obfOwner, obfName, obfDesc, owner, name, desc, methodNode.instructions.indexOf(startExclusive) - 1, true);
-	}
-
-	private static FieldInsnNode findFieldCall(MethodNode methodNode, int opCode, String obfOwner, String obfName, String obfDesc, String owner, String name,
-			String desc, int startInclusive, boolean reversed) {
-		if (startInclusive < 0 || startInclusive >= methodNode.instructions.size()) {
-			throw new NoSuchElementException();
-		}
-		for (int i = startInclusive; i >= 0 && i < methodNode.instructions.size(); i += reversed ? -1 : 1) {
-			AbstractInsnNode node = methodNode.instructions.get(i);
-			if (node instanceof FieldInsnNode && node.getOpcode() == opCode) {
-				FieldInsnNode fieldInsnNode = (FieldInsnNode) node;
-				if ((fieldInsnNode.owner.equals(obfOwner) && fieldInsnNode.name.equals(obfName) && fieldInsnNode.desc.equals(obfDesc))
-						|| (fieldInsnNode.owner.equals(owner) && fieldInsnNode.name.equals(name) && fieldInsnNode.desc.equals(desc))) {
-					return fieldInsnNode;
-				}
-			}
-		}
-		throw new NoSuchElementException();
+	public static <T extends AbstractInsnNode> InsnFinder<T> prev(AbstractInsnNode startInclusive) {
+		return InsnFinder.<T>create().prev(startInclusive);
 	}
 
 	public static InsnList listOf(AbstractInsnNode... nodes) {
