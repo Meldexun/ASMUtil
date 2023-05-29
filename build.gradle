@@ -18,19 +18,19 @@ dependencies {
 }
 
 jar {
-    archiveBaseName = 'ASMUtil'
-    archiveVersion = '1.0.0'
+    archiveBaseName = projectName
+    archiveVersion = projectVersion
 
     from rootProject.file('LICENSE')
 
     manifest.attributes([
-        'Built-By': 'Meldexun',
-        'Specification-Title': 'ASMUtil',
-        'Specification-Version': '1.0.0',
-        'Specification-Vendor': 'Meldexun',
-        'Implementation-Title': 'ASMUtil',
-        'Implementation-Version': '1.0.0',
-        'Implementation-Vendor': 'Meldexun',
+        'Built-By': projectAuthor,
+        'Specification-Title': projectName,
+        'Specification-Version': projectVersion,
+        'Specification-Vendor': projectAuthor,
+        'Implementation-Title': projectName,
+        'Implementation-Version': projectVersion,
+        'Implementation-Vendor': projectAuthor,
         'Implementation-Timestamp': new Date().format("yyyy-MM-dd HH:mm:ss")
     ])
 }
