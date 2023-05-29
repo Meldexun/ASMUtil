@@ -164,10 +164,92 @@ public class ASMUtil {
 		return InsnFinder.<T>create().prev(startInclusive);
 	}
 
-	public static InsnList listOf(AbstractInsnNode... nodes) {
+	public static InsnList listOf(AbstractInsnNode insn0) {
 		InsnList list = new InsnList();
-		for (AbstractInsnNode node : nodes) {
-			list.add(node);
+		list.add(insn0);
+		return list;
+	}
+
+	public static InsnList listOf(AbstractInsnNode insn0, AbstractInsnNode insn1) {
+		InsnList list = new InsnList();
+		list.add(insn0);
+		list.add(insn1);
+		return list;
+	}
+
+	public static InsnList listOf(AbstractInsnNode insn0, AbstractInsnNode insn1, AbstractInsnNode insn2) {
+		InsnList list = new InsnList();
+		list.add(insn0);
+		list.add(insn1);
+		list.add(insn2);
+		return list;
+	}
+
+	public static InsnList listOf(AbstractInsnNode insn0, AbstractInsnNode insn1, AbstractInsnNode insn2,
+			AbstractInsnNode insn3) {
+		InsnList list = new InsnList();
+		list.add(insn0);
+		list.add(insn1);
+		list.add(insn2);
+		list.add(insn3);
+		return list;
+	}
+
+	public static InsnList listOf(AbstractInsnNode insn0, AbstractInsnNode insn1, AbstractInsnNode insn2,
+			AbstractInsnNode insn3, AbstractInsnNode insn4) {
+		InsnList list = new InsnList();
+		list.add(insn0);
+		list.add(insn1);
+		list.add(insn2);
+		list.add(insn3);
+		list.add(insn4);
+		return list;
+	}
+
+	public static InsnList listOf(AbstractInsnNode insn0, AbstractInsnNode insn1, AbstractInsnNode insn2,
+			AbstractInsnNode insn3, AbstractInsnNode insn4, AbstractInsnNode insn5) {
+		InsnList list = new InsnList();
+		list.add(insn0);
+		list.add(insn1);
+		list.add(insn2);
+		list.add(insn3);
+		list.add(insn4);
+		list.add(insn5);
+		return list;
+	}
+
+	public static InsnList listOf(AbstractInsnNode insn0, AbstractInsnNode insn1, AbstractInsnNode insn2,
+			AbstractInsnNode insn3, AbstractInsnNode insn4, AbstractInsnNode insn5, AbstractInsnNode insn6) {
+		InsnList list = new InsnList();
+		list.add(insn0);
+		list.add(insn1);
+		list.add(insn2);
+		list.add(insn3);
+		list.add(insn4);
+		list.add(insn5);
+		list.add(insn6);
+		return list;
+	}
+
+	public static InsnList listOf(AbstractInsnNode insn0, AbstractInsnNode insn1, AbstractInsnNode insn2,
+			AbstractInsnNode insn3, AbstractInsnNode insn4, AbstractInsnNode insn5, AbstractInsnNode insn6,
+			AbstractInsnNode insn7) {
+		InsnList list = new InsnList();
+		list.add(insn0);
+		list.add(insn1);
+		list.add(insn2);
+		list.add(insn3);
+		list.add(insn4);
+		list.add(insn5);
+		list.add(insn6);
+		list.add(insn7);
+		return list;
+	}
+
+	public static InsnList listOf(AbstractInsnNode... insns) {
+		InsnList list = new InsnList();
+		for (AbstractInsnNode insn : insns) {
+			list.add(insn);
 		}
 		return list;
 	}
