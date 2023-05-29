@@ -1,8 +1,7 @@
 package meldexun.asmutil.transformer.clazz;
 
-@FunctionalInterface
 public interface IClassTransformer {
 
-	byte[] transform(String name, String transformedName, byte[] basicClass);
+	byte[] transform(String obfName, String name, byte[] basicClass);
 
 }
