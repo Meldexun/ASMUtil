@@ -5,19 +5,18 @@
 
 package meldexun.asmutil2;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-
 public abstract class HashMapClassNodeClassTransformer extends ClassNodeClassTransformer {
 
-	private final Map<String, List<ClassNodeTransformer>> classTransformers = new Object2ObjectOpenHashMap<>();
+	private final Map<String, List<ClassNodeTransformer>> classTransformers = new HashMap<>();
 
 	protected HashMapClassNodeClassTransformer() {
 		this.registerTransformers((className, transformer) -> this.classTransformers
-				.computeIfAbsent(className, k -> new ObjectArrayList<>()).add(transformer));
+				.computeIfAbsent(className, k -> new ArrayList<>()).add(transformer));
 	}
 
 	protected abstract void registerTransformers(IClassTransformerRegistry registry);
