@@ -290,4 +290,19 @@ public class ASMUtil {
 		return list;
 	}
 
+	public static InsnList remove(MethodNode methodNode, AbstractInsnNode start, AbstractInsnNode end) {
+		InsnList list = new InsnList();
+		AbstractInsnNode insn = start;
+		while (true) {
+			AbstractInsnNode next = insn.getNext();
+			methodNode.instructions.remove(insn);
+			list.add(insn);
+			if (insn == end) {
+				break;
+			}
+			insn = next;
+		}
+		return list;
+	}
+
 }
