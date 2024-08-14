@@ -5,8 +5,11 @@
 
 package meldexun.asmutil2;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -36,6 +39,9 @@ public class ASMUtil {
 
 	public static final Logger LOGGER = LogManager.getLogger("ASMUtil");
 	public static final boolean DISABLE_LOGGING = Boolean.parseBoolean(System.getProperty("meldexun.asm.disableLogging"));
+	public static final boolean EXPORT = Boolean.parseBoolean(System.getProperty("meldexun.asm.export"));
+	private static final Path EXPORT_DIR = Paths.get(".meldexun/asm/export");
+	private static boolean exportDirCleaned;
 
 	private static final Map<Class<? extends AbstractInsnNode>, Function<? extends AbstractInsnNode, String>> INSN_TO_STRING_SERIALIZERS = new HashMap<>();
 	static {
@@ -63,6 +69,30 @@ public class ASMUtil {
 	@SuppressWarnings("unchecked")
 	private static <T extends AbstractInsnNode> Function<T, String> get(T insn) {
 		return (Function<T, String>) INSN_TO_STRING_SERIALIZERS.get(insn.getClass());
+	}
+
+	static void exportIfEnabled(String name, byte[] data) {
+		if (EXPORT) {
+			try {
+				export(name, data);
+			} catch (IOException e) {
+				String errorMessage = String.format("Failed exporting class: %s", name);
+				ASMUtil.LOGGER.error(errorMessage, e);
+				throw new ClassTransformException(errorMessage, e);
+			}
+		}
+	}
+
+	private static void export(String name, byte[] data) throws IOException {
+		if (!exportDirCleaned) {
+			synchronized (ASMUtil.class) {
+				if (!exportDirCleaned) {
+					IOUtil.deleteDirectory(EXPORT_DIR);
+					exportDirCleaned = true;
+				}
+			}
+		}
+		IOUtil.writeFile(EXPORT_DIR.resolve(name.replace('.', '/') + ".class"), data);
 	}
 
 	public static String classToString(ClassNode classNode) {

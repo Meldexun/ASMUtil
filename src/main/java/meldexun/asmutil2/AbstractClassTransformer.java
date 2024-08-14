@@ -20,6 +20,7 @@ public abstract class AbstractClassTransformer implements IClassTransformer {
 		if (transformedClass == null) {
 			return basicClass;
 		}
+		ASMUtil.exportIfEnabled(name, transformedClass);
 		return transformedClass;
 	}
 
