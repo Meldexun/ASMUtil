@@ -9,20 +9,20 @@ import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 
-public abstract class ClassVisitorClassTransformer<T extends ClassVisitor> implements IClassTransformer {
+public abstract class ClassVisitorClassTransformer<T extends ClassVisitor> extends AbstractClassTransformer {
 
 	@Override
-	public byte[] transform(String obfName, String name, byte[] basicClass) {
+	public byte[] transformOrNull(String obfName, String name, byte[] basicClass) {
 		ITransformInfo<T> transformInfo = this.getTransformInfo(name);
 		if (transformInfo == null) {
-			return basicClass;
+			return null;
 		}
 		ClassReader classReader = new ClassReader(basicClass);
 		Lazy<ClassWriter> classWriter = new Lazy<>(() -> new ClassWriter(transformInfo.writeFlags()));
 		T classVisitor = transformInfo.visitor(classWriter);
 		classReader.accept(classVisitor, transformInfo.readFlags());
 		if (!transformInfo.transform(classVisitor, classWriter)) {
-			return basicClass;
+			return null;
 		}
 		return classWriter.get().toByteArray();
 	}
