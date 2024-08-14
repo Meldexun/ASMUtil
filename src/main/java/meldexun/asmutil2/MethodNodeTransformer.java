@@ -90,6 +90,9 @@ public class MethodNodeTransformer {
 						throw new ClassTransformException(
 								String.format("Found more method transform targets than expected (%s)", required));
 					}
+					if (!ASMUtil.DISABLE_LOGGING) {
+						ASMUtil.LOGGER.info("Transforming method {}#{}{}", classNode.name, method.name, method.desc);
+					}
 					transformer.accept(method);
 					transformedMethodCount++;
 				}

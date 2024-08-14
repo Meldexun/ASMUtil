@@ -35,6 +35,7 @@ import org.objectweb.asm.tree.VarInsnNode;
 public class ASMUtil {
 
 	public static final Logger LOGGER = LogManager.getLogger("ASMUtil");
+	public static final boolean DISABLE_LOGGING = Boolean.parseBoolean(System.getProperty("meldexun.asm.disableLogging"));
 
 	private static final Map<Class<? extends AbstractInsnNode>, Function<? extends AbstractInsnNode, String>> INSN_TO_STRING_SERIALIZERS = new HashMap<>();
 	static {

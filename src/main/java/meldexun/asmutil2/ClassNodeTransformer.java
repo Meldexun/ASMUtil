@@ -18,6 +18,9 @@ public interface ClassNodeTransformer {
 
 	static ClassNodeTransformer create(int writeFlags, Consumer<ClassNode> transformer) {
 		return create(writeFlags, classNode -> {
+			if (!ASMUtil.DISABLE_LOGGING) {
+				ASMUtil.LOGGER.info("Transforming class {}", classNode.name);
+			}
 			transformer.accept(classNode);
 			return true;
 		});
@@ -28,6 +31,9 @@ public interface ClassNodeTransformer {
 
 			@Override
 			public boolean transform(ClassNode classNode) {
+				if (!ASMUtil.DISABLE_LOGGING) {
+					ASMUtil.LOGGER.info("Transforming class {}", classNode.name);
+				}
 				return transformer.test(classNode);
 			}
 
