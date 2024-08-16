@@ -18,7 +18,7 @@ public abstract class ClassVisitorClassTransformer<T extends ClassVisitor> exten
 			return null;
 		}
 		ClassReader classReader = new ClassReader(basicClass);
-		Lazy<ClassWriter> classWriter = new Lazy<>(() -> new ClassWriter(transformInfo.writeFlags()));
+		Lazy<ClassWriter> classWriter = new Lazy<>(() -> this.createClassWriter(transformInfo.writeFlags()));
 		T classVisitor = transformInfo.visitor(classWriter);
 		classReader.accept(classVisitor, transformInfo.readFlags());
 		if (!transformInfo.transform(classVisitor, classWriter)) {
@@ -28,5 +28,9 @@ public abstract class ClassVisitorClassTransformer<T extends ClassVisitor> exten
 	}
 
 	protected abstract ITransformInfo<T> getTransformInfo(String name);
+
+	protected ClassWriter createClassWriter(int flags) {
+		return new ClassWriter(flags);
+	}
 
 }
