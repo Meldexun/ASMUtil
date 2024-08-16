@@ -87,12 +87,12 @@ public class ASMUtil {
 		if (!exportDirCleaned) {
 			synchronized (ASMUtil.class) {
 				if (!exportDirCleaned) {
-					IOUtil.deleteDirectory(EXPORT_DIR);
+					FileUtil.deleteDirectory(EXPORT_DIR);
 					exportDirCleaned = true;
 				}
 			}
 		}
-		IOUtil.writeFile(EXPORT_DIR.resolve(name.replace('.', '/') + ".class"), data);
+		FileUtil.writeFile(EXPORT_DIR.resolve(name.replace('.', '/') + ".class"), data);
 	}
 
 	public static String classToString(ClassNode classNode) {
