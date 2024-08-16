@@ -30,7 +30,7 @@ public abstract class ClassVisitorClassTransformer<T extends ClassVisitor> exten
 	protected abstract ITransformInfo<T> getTransformInfo(String name);
 
 	protected ClassWriter createClassWriter(int flags) {
-		return new ClassWriter(flags);
+		return new NonLoadingClassWriter(flags);
 	}
 
 }
