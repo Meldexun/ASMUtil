@@ -305,4 +305,14 @@ public class ASMUtil {
 		return list;
 	}
 
+	public static void replace(MethodNode methodNode, AbstractInsnNode start, AbstractInsnNode end, InsnList insns) {
+		AbstractInsnNode previous = start.getPrevious();
+		remove(methodNode, start, end);
+		if (previous != null) {
+			methodNode.instructions.insert(previous, insns);
+		} else {
+			methodNode.instructions.insert(insns);
+		}
+	}
+
 }
