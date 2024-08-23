@@ -314,13 +314,57 @@ public class ASMUtil {
 		return list;
 	}
 
-	public static void replace(MethodNode methodNode, AbstractInsnNode start, AbstractInsnNode end, InsnList insns) {
-		AbstractInsnNode previous = start.getPrevious();
-		remove(methodNode, start, end);
+	public static void replace(MethodNode methodNode, AbstractInsnNode target, AbstractInsnNode replacement) {
+		AbstractInsnNode previous = target.getPrevious();
+		methodNode.instructions.remove(target);
 		if (previous != null) {
-			methodNode.instructions.insert(previous, insns);
+			methodNode.instructions.insert(previous, replacement);
 		} else {
-			methodNode.instructions.insert(insns);
+			methodNode.instructions.insert(replacement);
+		}
+	}
+
+	public static void replace(MethodNode methodNode, AbstractInsnNode target, InsnList replacement) {
+		AbstractInsnNode previous = target.getPrevious();
+		methodNode.instructions.remove(target);
+		if (previous != null) {
+			methodNode.instructions.insert(previous, replacement);
+		} else {
+			methodNode.instructions.insert(replacement);
+		}
+	}
+
+	public static void replace(MethodNode methodNode, AbstractInsnNode start, AbstractInsnNode end,
+			AbstractInsnNode replacement) {
+		AbstractInsnNode previous = start.getPrevious();
+		ASMUtil.removeNoResult(methodNode, start, end);
+		if (previous != null) {
+			methodNode.instructions.insert(previous, replacement);
+		} else {
+			methodNode.instructions.insert(replacement);
+		}
+	}
+
+	public static void replace(MethodNode methodNode, AbstractInsnNode start, AbstractInsnNode end,
+			InsnList replacement) {
+		AbstractInsnNode previous = start.getPrevious();
+		ASMUtil.removeNoResult(methodNode, start, end);
+		if (previous != null) {
+			methodNode.instructions.insert(previous, replacement);
+		} else {
+			methodNode.instructions.insert(replacement);
+		}
+	}
+
+	private static void removeNoResult(MethodNode methodNode, AbstractInsnNode start, AbstractInsnNode end) {
+		AbstractInsnNode insn = start;
+		while (true) {
+			AbstractInsnNode next = insn.getNext();
+			methodNode.instructions.remove(insn);
+			if (insn == end) {
+				break;
+			}
+			insn = next;
 		}
 	}
 
