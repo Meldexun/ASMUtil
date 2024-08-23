@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -288,6 +289,14 @@ public class ASMUtil {
 			list.add(insn);
 		}
 		return list;
+	}
+
+	public static InsnList listWithLabel(Function<LabelNode, InsnList> mappingFunction) {
+		return mappingFunction.apply(new LabelNode());
+	}
+
+	public static InsnList listWithLabels(BiFunction<LabelNode, LabelNode, InsnList> mappingFunction) {
+		return mappingFunction.apply(new LabelNode(), new LabelNode());
 	}
 
 	public static InsnList remove(MethodNode methodNode, AbstractInsnNode start, AbstractInsnNode end) {
