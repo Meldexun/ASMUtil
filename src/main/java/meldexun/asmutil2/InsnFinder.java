@@ -57,6 +57,22 @@ public class InsnFinder<T extends AbstractInsnNode> {
 		return this;
 	}
 
+	public InsnFinder<AbstractInsnNode> findThenNextExclusive() {
+		return ASMUtil.nextExclusive(this.find());
+	}
+
+	public InsnFinder<AbstractInsnNode> findThenPrevExclusive() {
+		return ASMUtil.prevExclusive(this.find());
+	}
+
+	public InsnFinder<AbstractInsnNode> findThenNext() {
+		return ASMUtil.next(this.find());
+	}
+
+	public InsnFinder<AbstractInsnNode> findThenPrev() {
+		return ASMUtil.prev(this.find());
+	}
+
 	@SuppressWarnings("unchecked")
 	public <R extends AbstractInsnNode> InsnFinder<R> type(Class<R> type) {
 		InsnFinder<R> n = (InsnFinder<R>) this;
