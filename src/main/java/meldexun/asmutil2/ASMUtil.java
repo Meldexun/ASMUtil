@@ -299,6 +299,14 @@ public class ASMUtil {
 		return mappingFunction.apply(new LabelNode(), new LabelNode());
 	}
 
+	public static InsnList listWithLabels(TriFunction<LabelNode, LabelNode, LabelNode, InsnList> mappingFunction) {
+		return mappingFunction.apply(new LabelNode(), new LabelNode(), new LabelNode());
+	}
+
+	public static InsnList listWithLabels(QuadFunction<LabelNode, LabelNode, LabelNode, LabelNode, InsnList> mappingFunction) {
+		return mappingFunction.apply(new LabelNode(), new LabelNode(), new LabelNode(), new LabelNode());
+	}
+
 	public static InsnList remove(MethodNode methodNode, AbstractInsnNode start, AbstractInsnNode end) {
 		InsnList list = new InsnList();
 		AbstractInsnNode insn = start;
