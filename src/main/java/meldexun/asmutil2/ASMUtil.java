@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -31,6 +32,7 @@ import org.objectweb.asm.tree.JumpInsnNode;
 import org.objectweb.asm.tree.LabelNode;
 import org.objectweb.asm.tree.LdcInsnNode;
 import org.objectweb.asm.tree.LineNumberNode;
+import org.objectweb.asm.tree.LocalVariableNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.tree.TypeInsnNode;
@@ -374,6 +376,26 @@ public class ASMUtil {
 			}
 			insn = next;
 		}
+	}
+
+	public static LocalVariableNode findLocalVariable(MethodNode methodNode, String name, String desc, int ordinal) {
+		int i = 0;
+		for (LocalVariableNode localVariable : methodNode.localVariables) {
+			if (localVariable.name.equals(name) && localVariable.desc.equals(desc) && i++ == ordinal) {
+				return localVariable;
+			}
+		}
+		throw new NoSuchElementException();
+	}
+
+	public static void addLocalVariable(MethodNode methodNode, String name, String desc, LabelNode start, LabelNode end) {
+		int i = 0;
+		for (LocalVariableNode localVariable : methodNode.localVariables) {
+			if (localVariable.index >= i) {
+				i = localVariable.index + 1;
+			}
+		}
+		methodNode.localVariables.add(new LocalVariableNode(name, desc, null, start, end, i));
 	}
 
 }
