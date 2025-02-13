@@ -18,6 +18,8 @@ import java.util.NoSuchElementException;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -396,6 +398,18 @@ public class ASMUtil {
 			}
 		}
 		methodNode.localVariables.add(new LocalVariableNode(name, desc, null, start, end, i));
+	}
+
+	public static Stream<MethodNode> stream(ClassNode classNode) {
+		return classNode.methods.stream();
+	}
+
+	public static Stream<AbstractInsnNode> stream(MethodNode methodNode) {
+		return stream(methodNode.instructions);
+	}
+
+	public static Stream<AbstractInsnNode> stream(InsnList instructions) {
+		return StreamSupport.stream(new InsnSpliterator(instructions), false);
 	}
 
 }
