@@ -311,6 +311,10 @@ public class ASMUtil {
 		return mappingFunction.apply(new LabelNode(), new LabelNode(), new LabelNode(), new LabelNode());
 	}
 
+	public static InsnList removeAll(MethodNode methodNode) {
+		return remove(methodNode, methodNode.instructions.getFirst(), methodNode.instructions.getLast());
+	}
+
 	public static InsnList remove(MethodNode methodNode, AbstractInsnNode start, AbstractInsnNode end) {
 		InsnList list = new InsnList();
 		AbstractInsnNode insn = start;
@@ -324,6 +328,16 @@ public class ASMUtil {
 			insn = next;
 		}
 		return list;
+	}
+
+	public static void replaceAll(MethodNode methodNode, AbstractInsnNode replacement) {
+		methodNode.instructions.clear();
+		methodNode.instructions.insert(replacement);
+	}
+
+	public static void replaceAll(MethodNode methodNode, InsnList replacement) {
+		methodNode.instructions.clear();
+		methodNode.instructions.insert(replacement);
 	}
 
 	public static void replace(MethodNode methodNode, AbstractInsnNode target, AbstractInsnNode replacement) {
