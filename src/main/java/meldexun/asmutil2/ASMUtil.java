@@ -13,9 +13,12 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -454,6 +457,51 @@ public class ASMUtil {
 
 	public static Stream<AbstractInsnNode> stream(InsnList instructions) {
 		return StreamSupport.stream(new InsnSpliterator(instructions), false);
+	}
+
+	public static void forEach(InsnList instructions, Consumer<AbstractInsnNode> action) {
+		forEach(instructions, null, null, action);
+	}
+
+	public static <T extends AbstractInsnNode> void forEach(InsnList instructions, Class<T> type, Consumer<T> action) {
+		forEach(instructions, type, null, action);
+	}
+
+	public static void forEach(InsnList instructions, Predicate<AbstractInsnNode> filter,
+			Consumer<AbstractInsnNode> action) {
+		forEach(instructions, null, filter, action);
+	}
+
+	public static <T extends AbstractInsnNode> void forEach(InsnList instructions, Class<T> type, Predicate<T> filter,
+			Consumer<T> action) {
+		forEach(instructions, type, filter, (iterator, insn) -> action.accept(insn));
+	}
+
+	public static void forEach(InsnList instructions,
+			BiConsumer<ListIterator<AbstractInsnNode>, AbstractInsnNode> action) {
+		forEach(instructions, null, null, action);
+	}
+
+	public static <T extends AbstractInsnNode> void forEach(InsnList instructions, Class<T> type,
+			BiConsumer<ListIterator<AbstractInsnNode>, T> action) {
+		forEach(instructions, type, null, action);
+	}
+
+	public static void forEach(InsnList instructions, Predicate<AbstractInsnNode> filter,
+			BiConsumer<ListIterator<AbstractInsnNode>, AbstractInsnNode> action) {
+		forEach(instructions, null, filter, action);
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T extends AbstractInsnNode> void forEach(InsnList instructions, Class<T> type, Predicate<T> filter,
+			BiConsumer<ListIterator<AbstractInsnNode>, T> action) {
+		ListIterator<AbstractInsnNode> iterator = instructions.iterator();
+		while (iterator.hasNext()) {
+			AbstractInsnNode insn = iterator.next();
+			if ((type == null || type.isInstance(insn)) && (filter == null || filter.test((T) insn))) {
+				action.accept(iterator, (T) insn);
+			}
+		}
 	}
 
 }
