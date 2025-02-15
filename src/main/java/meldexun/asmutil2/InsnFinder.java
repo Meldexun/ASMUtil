@@ -22,6 +22,7 @@ public class InsnFinder<T extends AbstractInsnNode> {
 	private AbstractInsnNode startInclusive;
 	private UnaryOperator<AbstractInsnNode> advance;
 	private Class<T> type;
+	private int opcode = -1;
 	private Predicate<T> predicate;
 	private int ordinal;
 
@@ -81,68 +82,105 @@ public class InsnFinder<T extends AbstractInsnNode> {
 	}
 
 	public InsnFinder<T> opcode(int opcode) {
-		return this.predicate(insn -> insn.getOpcode() == opcode);
+		this.opcode = opcode;
+		return this;
 	}
 
 	public InsnFinder<LdcInsnNode> ldcInsn(Object cst) {
 		return this.type(LdcInsnNode.class).predicate(insn -> Objects.equals(insn.cst, cst));
 	}
 
-	public InsnFinder<IntInsnNode> intInsn(int opcode, int operand) {
-		return this.type(IntInsnNode.class).predicate(insn -> insn.getOpcode() == opcode && insn.operand == operand);
+	public InsnFinder<IntInsnNode> intInsn(int operand) {
+		return this.type(IntInsnNode.class).predicate(insn -> insn.operand == operand);
 	}
 
-	public InsnFinder<MethodInsnNode> methodInsn(int opcode, String owner, String name, String desc) {
+	public InsnFinder<MethodInsnNode> methodInsn(String name) {
 		return this.type(MethodInsnNode.class).predicate(insn -> {
-			return insn.getOpcode() == opcode
-					&& insn.owner.equals(owner)
-					&& insn.name.equals(name)
-					&& insn.desc.equals(desc);
+			return insn.name.equals(name);
 		});
 	}
 
-	public InsnFinder<MethodInsnNode> methodInsn(int opcode, String owner, String name, String deobfName, String desc) {
+	public InsnFinder<MethodInsnNode> methodInsnObf(String name, String obfName) {
 		return this.type(MethodInsnNode.class).predicate(insn -> {
-			return insn.getOpcode() == opcode
-					&& insn.owner.equals(owner)
-					&& (insn.name.equals(deobfName) || insn.name.equals(name))
-					&& insn.desc.equals(desc);
+			return insn.name.equals(obfName) || insn.name.equals(name);
 		});
 	}
 
-	public InsnFinder<MethodInsnNode> methodInsn(int opcode, String owner, String name, String desc, String deobfOwner,
-			String deobfName, String deobfDesc) {
+	public InsnFinder<MethodInsnNode> methodInsn(String name, String desc) {
 		return this.type(MethodInsnNode.class).predicate(insn -> {
-			return insn.getOpcode() == opcode
-					&& (insn.owner.equals(owner) && insn.name.equals(name) && insn.desc.equals(desc)
-							|| insn.owner.equals(deobfOwner) && insn.name.equals(deobfName) && insn.desc.equals(deobfDesc));
+			return insn.name.equals(name) && insn.desc.equals(desc);
 		});
 	}
 
-	public InsnFinder<FieldInsnNode> fieldInsn(int opcode, String owner, String name, String desc) {
-		return this.type(FieldInsnNode.class).predicate(insn -> {
-			return insn.getOpcode() == opcode
-					&& insn.owner.equals(owner)
-					&& insn.name.equals(name)
+	public InsnFinder<MethodInsnNode> methodInsnObf(String name, String obfName, String desc) {
+		return this.type(MethodInsnNode.class).predicate(insn -> {
+			return (insn.name.equals(obfName) || insn.name.equals(name)) && insn.desc.equals(desc);
+		});
+	}
+
+	public InsnFinder<MethodInsnNode> methodInsn(String owner, String name, String desc) {
+		return this.type(MethodInsnNode.class).predicate(insn -> {
+			return insn.owner.equals(owner) && insn.name.equals(name) && insn.desc.equals(desc);
+		});
+	}
+
+	public InsnFinder<MethodInsnNode> methodInsnObf(String owner, String name, String obfName, String desc) {
+		return this.type(MethodInsnNode.class).predicate(insn -> {
+			return insn.owner.equals(owner) && (insn.name.equals(obfName) || insn.name.equals(name))
 					&& insn.desc.equals(desc);
 		});
 	}
 
-	public InsnFinder<FieldInsnNode> fieldInsn(int opcode, String owner, String name, String deobfName, String desc) {
+	public InsnFinder<MethodInsnNode> methodInsnObf(String owner, String name, String desc, String obfOwner,
+			String obfName, String obfDesc) {
+		return this.type(MethodInsnNode.class).predicate(insn -> {
+			return insn.owner.equals(obfOwner) && insn.name.equals(obfName) && insn.desc.equals(obfDesc)
+					|| insn.owner.equals(owner) && insn.name.equals(name) && insn.desc.equals(desc);
+		});
+	}
+
+	public InsnFinder<FieldInsnNode> fieldInsn(String name) {
 		return this.type(FieldInsnNode.class).predicate(insn -> {
-			return insn.getOpcode() == opcode
-					&& insn.owner.equals(owner)
-					&& (insn.name.equals(deobfName) || insn.name.equals(name))
+			return insn.name.equals(name);
+		});
+	}
+
+	public InsnFinder<FieldInsnNode> fieldInsnObf(String name, String obfName) {
+		return this.type(FieldInsnNode.class).predicate(insn -> {
+			return insn.name.equals(obfName) || insn.name.equals(name);
+		});
+	}
+
+	public InsnFinder<FieldInsnNode> fieldInsn(String name, String desc) {
+		return this.type(FieldInsnNode.class).predicate(insn -> {
+			return insn.name.equals(name) && insn.desc.equals(desc);
+		});
+	}
+
+	public InsnFinder<FieldInsnNode> fieldInsnObf(String name, String obfName, String desc) {
+		return this.type(FieldInsnNode.class).predicate(insn -> {
+			return (insn.name.equals(obfName) || insn.name.equals(name)) && insn.desc.equals(desc);
+		});
+	}
+
+	public InsnFinder<FieldInsnNode> fieldInsn(String owner, String name, String desc) {
+		return this.type(FieldInsnNode.class).predicate(insn -> {
+			return insn.owner.equals(owner) && insn.name.equals(name) && insn.desc.equals(desc);
+		});
+	}
+
+	public InsnFinder<FieldInsnNode> fieldInsnObf(String owner, String name, String obfName, String desc) {
+		return this.type(FieldInsnNode.class).predicate(insn -> {
+			return insn.owner.equals(owner) && (insn.name.equals(obfName) || insn.name.equals(name))
 					&& insn.desc.equals(desc);
 		});
 	}
 
-	public InsnFinder<FieldInsnNode> fieldInsn(int opcode, String owner, String name, String desc, String deobfOwner,
-			String deobfName, String deobfDesc) {
+	public InsnFinder<FieldInsnNode> fieldInsnObf(String owner, String name, String desc, String obfOwner,
+			String obfName, String obfDesc) {
 		return this.type(FieldInsnNode.class).predicate(insn -> {
-			return insn.getOpcode() == opcode
-					&& (insn.owner.equals(owner) && insn.name.equals(name) && insn.desc.equals(desc)
-							|| insn.owner.equals(deobfOwner) && insn.name.equals(deobfName) && insn.desc.equals(deobfDesc));
+			return insn.owner.equals(obfOwner) && insn.name.equals(obfName) && insn.desc.equals(obfDesc)
+					|| insn.owner.equals(owner) && insn.name.equals(name) && insn.desc.equals(desc);
 		});
 	}
 
@@ -161,6 +199,7 @@ public class InsnFinder<T extends AbstractInsnNode> {
 		int i = 0;
 		AbstractInsnNode insn = this.startInclusive;
 		while (insn != null && (this.type != null && !this.type.isInstance(insn)
+				|| this.opcode >= 0 && insn.getOpcode() != this.opcode
 				|| this.predicate != null && !this.predicate.test((T) insn) || i++ != this.ordinal)) {
 			insn = this.advance.apply(insn);
 		}
