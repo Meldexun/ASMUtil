@@ -16,6 +16,7 @@ import org.objectweb.asm.tree.IntInsnNode;
 import org.objectweb.asm.tree.LdcInsnNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.MethodNode;
+import org.objectweb.asm.tree.TypeInsnNode;
 
 public class InsnFinder<T extends AbstractInsnNode> {
 
@@ -84,6 +85,10 @@ public class InsnFinder<T extends AbstractInsnNode> {
 	public InsnFinder<T> opcode(int opcode) {
 		this.opcode = opcode;
 		return this;
+	}
+
+	public InsnFinder<TypeInsnNode> typeInsn(String desc) {
+		return this.type(TypeInsnNode.class).predicate(insn -> insn.desc.equals(desc));
 	}
 
 	public InsnFinder<LdcInsnNode> ldcInsn(Object cst) {
