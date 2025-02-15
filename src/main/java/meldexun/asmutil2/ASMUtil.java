@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -179,6 +180,35 @@ public class ASMUtil {
 				.map(Field::getName)
 				.findFirst()
 				.orElse("UNKNOWN");
+	}
+
+	public static MethodNode find(ClassNode classNode, String name) {
+		return find(classNode, MethodNodeUtil.matching(name));
+	}
+
+	public static MethodNode findObf(ClassNode classNode, String name, String obfName) {
+		return find(classNode, MethodNodeUtil.matching(name, obfName));
+	}
+
+	public static MethodNode find(ClassNode classNode, String name, String desc) {
+		return find(classNode, MethodNodeUtil.matching(name, desc));
+	}
+
+	public static MethodNode find(ClassNode classNode, String name, String obfName, String desc) {
+		return find(classNode, MethodNodeUtil.matching(name, obfName, desc));
+	}
+
+	public static MethodNode find(ClassNode classNode, String name, String desc, String obfName, String obfDesc) {
+		return find(classNode, MethodNodeUtil.matching(name, desc, obfName, obfDesc));
+	}
+
+	public static MethodNode find(ClassNode classNode, Predicate<MethodNode> predicate) {
+		for (MethodNode methodNode : classNode.methods) {
+			if (predicate.test(methodNode)) {
+				return methodNode;
+			}
+		}
+		throw new NoSuchElementException();
 	}
 
 	public static <T extends AbstractInsnNode> InsnFinder<T> first(MethodNode methodNode) {

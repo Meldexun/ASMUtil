@@ -12,27 +12,6 @@ import org.objectweb.asm.tree.MethodNode;
 
 public class MethodNodeTransformer {
 
-	private static Predicate<MethodNode> matching(String name) {
-		return method -> name.equals(method.name);
-	}
-
-	private static Predicate<MethodNode> matchingObf(String name, String obfName) {
-		return method -> obfName.equals(method.name) || name.equals(method.name);
-	}
-
-	private static Predicate<MethodNode> matching(String name, String desc) {
-		return method -> name.equals(method.name) && desc.equals(method.desc);
-	}
-
-	private static Predicate<MethodNode> matching(String name, String obfName, String desc) {
-		return method -> (obfName.equals(method.name) || name.equals(method.name)) && desc.equals(method.desc);
-	}
-
-	private static Predicate<MethodNode> matching(String name, String desc, String obfName, String obfDesc) {
-		return method -> obfName.equals(method.name) && obfDesc.equals(method.desc)
-				|| name.equals(method.name) && desc.equals(method.desc);
-	}
-
 	public static ClassNodeTransformer create(String name, int writeFlags, Consumer<MethodNode> transformer) {
 		return create(name, 1, writeFlags, transformer);
 	}
@@ -93,27 +72,27 @@ public class MethodNodeTransformer {
 
 	public static ClassNodeTransformer create(String name, int required, int writeFlags,
 			Consumer<MethodNode> transformer) {
-		return create(matching(name), required, writeFlags, transformer);
+		return create(MethodNodeUtil.matching(name), required, writeFlags, transformer);
 	}
 
 	public static ClassNodeTransformer createObf(String name, String obfName, int required, int writeFlags,
 			Consumer<MethodNode> transformer) {
-		return create(matchingObf(name, obfName), required, writeFlags, transformer);
+		return create(MethodNodeUtil.matchingObf(name, obfName), required, writeFlags, transformer);
 	}
 
 	public static ClassNodeTransformer create(String name, String desc, int required, int writeFlags,
 			Consumer<MethodNode> transformer) {
-		return create(matching(name, desc), required, writeFlags, transformer);
+		return create(MethodNodeUtil.matching(name, desc), required, writeFlags, transformer);
 	}
 
 	public static ClassNodeTransformer create(String name, String obfName, String desc, int required, int writeFlags,
 			Consumer<MethodNode> transformer) {
-		return create(matching(name, obfName, desc), required, writeFlags, transformer);
+		return create(MethodNodeUtil.matching(name, obfName, desc), required, writeFlags, transformer);
 	}
 
 	public static ClassNodeTransformer create(String name, String desc, String obfName, String obfDesc, int required,
 			int writeFlags, Consumer<MethodNode> transformer) {
-		return create(matching(name, desc, obfName, obfDesc), required, writeFlags, transformer);
+		return create(MethodNodeUtil.matching(name, desc, obfName, obfDesc), required, writeFlags, transformer);
 	}
 
 	public static ClassNodeTransformer create(Predicate<MethodNode> predicate, int required, int writeFlags,
