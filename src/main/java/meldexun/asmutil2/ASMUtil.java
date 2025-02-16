@@ -427,10 +427,23 @@ public class ASMUtil {
 		}
 	}
 
+	public static LocalVariableNode findLocalVariable(MethodNode methodNode, String name) {
+		return findLocalVariable(methodNode, name, 0);
+	}
+
+	public static LocalVariableNode findLocalVariable(MethodNode methodNode, String name, int ordinal) {
+		return findLocalVariable(methodNode, name, null);
+	}
+
+	public static LocalVariableNode findLocalVariable(MethodNode methodNode, String name, String desc) {
+		return findLocalVariable(methodNode, name, desc, 0);
+	}
+
 	public static LocalVariableNode findLocalVariable(MethodNode methodNode, String name, String desc, int ordinal) {
 		int i = 0;
 		for (LocalVariableNode localVariable : methodNode.localVariables) {
-			if (localVariable.name.equals(name) && localVariable.desc.equals(desc) && i++ == ordinal) {
+			if (localVariable.name.equals(name) && (desc == null || localVariable.desc.equals(desc))
+					&& i++ == ordinal) {
 				return localVariable;
 			}
 		}
