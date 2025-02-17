@@ -432,7 +432,7 @@ public class ASMUtil {
 	}
 
 	public static LocalVariableNode findLocalVariable(MethodNode methodNode, String name, int ordinal) {
-		return findLocalVariable(methodNode, name, null);
+		return findLocalVariable(methodNode, name, null, ordinal);
 	}
 
 	public static LocalVariableNode findLocalVariable(MethodNode methodNode, String name, String desc) {
