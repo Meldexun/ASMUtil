@@ -435,6 +435,14 @@ public class ASMUtil {
 		return findLocalVariable(methodNode, name, null, ordinal);
 	}
 
+	public static LocalVariableNode findLocalVariableDesc(MethodNode methodNode, String desc) {
+		return findLocalVariableDesc(methodNode, desc, 0);
+	}
+
+	public static LocalVariableNode findLocalVariableDesc(MethodNode methodNode, String desc, int ordinal) {
+		return findLocalVariable(methodNode, null, desc, ordinal);
+	}
+
 	public static LocalVariableNode findLocalVariable(MethodNode methodNode, String name, String desc) {
 		return findLocalVariable(methodNode, name, desc, 0);
 	}
@@ -442,7 +450,7 @@ public class ASMUtil {
 	public static LocalVariableNode findLocalVariable(MethodNode methodNode, String name, String desc, int ordinal) {
 		int i = 0;
 		for (LocalVariableNode localVariable : methodNode.localVariables) {
-			if (localVariable.name.equals(name) && (desc == null || localVariable.desc.equals(desc))
+			if ((name == null || localVariable.name.equals(name)) && (desc == null || localVariable.desc.equals(desc))
 					&& i++ == ordinal) {
 				return localVariable;
 			}
