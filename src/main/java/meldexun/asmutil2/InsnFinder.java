@@ -17,9 +17,11 @@ import org.objectweb.asm.tree.LdcInsnNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.tree.TypeInsnNode;
+import org.objectweb.asm.tree.VarInsnNode;
 
 public class InsnFinder<T extends AbstractInsnNode> {
 
+	private final MethodNode method;
 	private AbstractInsnNode startInclusive;
 	private UnaryOperator<AbstractInsnNode> advance;
 	private Class<T> type;
@@ -27,16 +29,20 @@ public class InsnFinder<T extends AbstractInsnNode> {
 	private Predicate<T> predicate;
 	private int ordinal;
 
-	public static InsnFinder<AbstractInsnNode> create() {
-		return new InsnFinder<>();
+	public InsnFinder(MethodNode method) {
+		this.method = Objects.requireNonNull(method);
 	}
 
-	public InsnFinder<T> first(MethodNode methodNode) {
-		return this.next(methodNode.instructions.getFirst());
+	public static InsnFinder<AbstractInsnNode> create(MethodNode method) {
+		return new InsnFinder<>(method);
 	}
 
-	public InsnFinder<T> last(MethodNode methodNode) {
-		return this.prev(methodNode.instructions.getLast());
+	public InsnFinder<T> first() {
+		return this.next(this.method.instructions.getFirst());
+	}
+
+	public InsnFinder<T> last() {
+		return this.prev(this.method.instructions.getLast());
 	}
 
 	public InsnFinder<T> nextExclusive(AbstractInsnNode startExclusive) {
@@ -60,19 +66,19 @@ public class InsnFinder<T extends AbstractInsnNode> {
 	}
 
 	public InsnFinder<AbstractInsnNode> findThenNextExclusive() {
-		return ASMUtil.nextExclusive(this.find());
+		return ASMUtil.nextExclusive(this.method, this.find());
 	}
 
 	public InsnFinder<AbstractInsnNode> findThenPrevExclusive() {
-		return ASMUtil.prevExclusive(this.find());
+		return ASMUtil.prevExclusive(this.method, this.find());
 	}
 
 	public InsnFinder<AbstractInsnNode> findThenNext() {
-		return ASMUtil.next(this.find());
+		return ASMUtil.next(this.method, this.find());
 	}
 
 	public InsnFinder<AbstractInsnNode> findThenPrev() {
-		return ASMUtil.prev(this.find());
+		return ASMUtil.prev(this.method, this.find());
 	}
 
 	@SuppressWarnings("unchecked")
