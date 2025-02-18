@@ -26,14 +26,14 @@ public class MethodNodeTransformer {
 		return create(name, desc, 1, writeFlags, transformer);
 	}
 
-	public static ClassNodeTransformer create(String name, String obfName, String desc, int writeFlags,
+	public static ClassNodeTransformer createObf(String name, String obfName, String desc, int writeFlags,
 			Consumer<MethodNode> transformer) {
-		return create(name, obfName, desc, 1, writeFlags, transformer);
+		return createObf(name, obfName, desc, 1, writeFlags, transformer);
 	}
 
-	public static ClassNodeTransformer create(String name, String desc, String obfName, String obfDesc, int writeFlags,
-			Consumer<MethodNode> transformer) {
-		return create(name, desc, obfName, obfDesc, 1, writeFlags, transformer);
+	public static ClassNodeTransformer createObf(String name, String desc, String obfName, String obfDesc,
+			int writeFlags, Consumer<MethodNode> transformer) {
+		return createObf(name, desc, obfName, obfDesc, 1, writeFlags, transformer);
 	}
 
 	public static ClassNodeTransformer create(Predicate<MethodNode> predicate, int writeFlags,
@@ -55,14 +55,14 @@ public class MethodNodeTransformer {
 		return create(name, desc, 0, writeFlags, transformer);
 	}
 
-	public static ClassNodeTransformer createOptional(String name, String obfName, String desc, int writeFlags,
+	public static ClassNodeTransformer createObfOptional(String name, String obfName, String desc, int writeFlags,
 			Consumer<MethodNode> transformer) {
-		return create(name, obfName, desc, 0, writeFlags, transformer);
+		return createObf(name, obfName, desc, 0, writeFlags, transformer);
 	}
 
-	public static ClassNodeTransformer createOptional(String name, String desc, String obfName, String obfDesc,
+	public static ClassNodeTransformer createObfOptional(String name, String desc, String obfName, String obfDesc,
 			int writeFlags, Consumer<MethodNode> transformer) {
-		return create(name, desc, obfName, obfDesc, 0, writeFlags, transformer);
+		return createObf(name, desc, obfName, obfDesc, 0, writeFlags, transformer);
 	}
 
 	public static ClassNodeTransformer createOptional(Predicate<MethodNode> predicate, int writeFlags,
@@ -85,12 +85,12 @@ public class MethodNodeTransformer {
 		return create(MethodNodeUtil.matching(name, desc), required, writeFlags, transformer);
 	}
 
-	public static ClassNodeTransformer create(String name, String obfName, String desc, int required, int writeFlags,
+	public static ClassNodeTransformer createObf(String name, String obfName, String desc, int required, int writeFlags,
 			Consumer<MethodNode> transformer) {
 		return create(MethodNodeUtil.matching(name, obfName, desc), required, writeFlags, transformer);
 	}
 
-	public static ClassNodeTransformer create(String name, String desc, String obfName, String obfDesc, int required,
+	public static ClassNodeTransformer createObf(String name, String desc, String obfName, String obfDesc, int required,
 			int writeFlags, Consumer<MethodNode> transformer) {
 		return create(MethodNodeUtil.matching(name, desc, obfName, obfDesc), required, writeFlags, transformer);
 	}

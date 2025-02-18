@@ -36,14 +36,14 @@ public interface IClassTransformerRegistry {
 		this.add(className, MethodNodeTransformer.create(name, desc, writeFlags, transformer));
 	}
 
-	default void add(String className, String name, String obfName, String desc, int writeFlags,
+	default void addObf(String className, String name, String obfName, String desc, int writeFlags,
 			Consumer<MethodNode> transformer) {
-		this.add(className, MethodNodeTransformer.create(name, obfName, desc, writeFlags, transformer));
+		this.add(className, MethodNodeTransformer.createObf(name, obfName, desc, writeFlags, transformer));
 	}
 
-	default void add(String className, String name, String desc, String obfName, String obfDesc, int writeFlags,
+	default void addObf(String className, String name, String desc, String obfName, String obfDesc, int writeFlags,
 			Consumer<MethodNode> transformer) {
-		this.add(className, MethodNodeTransformer.create(name, desc, obfName, obfDesc, writeFlags, transformer));
+		this.add(className, MethodNodeTransformer.createObf(name, desc, obfName, obfDesc, writeFlags, transformer));
 	}
 
 	default void addOptional(String className, String name, int writeFlags, Consumer<MethodNode> transformer) {
@@ -60,15 +60,15 @@ public interface IClassTransformerRegistry {
 		this.add(className, MethodNodeTransformer.createOptional(name, desc, writeFlags, transformer));
 	}
 
-	default void addOptional(String className, String name, String obfName, String desc, int writeFlags,
+	default void addObfOptional(String className, String name, String obfName, String desc, int writeFlags,
 			Consumer<MethodNode> transformer) {
-		this.add(className, MethodNodeTransformer.createOptional(name, obfName, desc, writeFlags, transformer));
+		this.add(className, MethodNodeTransformer.createObfOptional(name, obfName, desc, writeFlags, transformer));
 	}
 
-	default void addOptional(String className, String name, String desc, String obfName, String obfDesc, int writeFlags,
-			Consumer<MethodNode> transformer) {
+	default void addObfOptional(String className, String name, String desc, String obfName, String obfDesc,
+			int writeFlags, Consumer<MethodNode> transformer) {
 		this.add(className,
-				MethodNodeTransformer.createOptional(name, desc, obfName, obfDesc, writeFlags, transformer));
+				MethodNodeTransformer.createObfOptional(name, desc, obfName, obfDesc, writeFlags, transformer));
 	}
 
 	default void add(String className, String name, int required, int writeFlags, Consumer<MethodNode> transformer) {
@@ -85,15 +85,15 @@ public interface IClassTransformerRegistry {
 		this.add(className, MethodNodeTransformer.create(name, desc, required, writeFlags, transformer));
 	}
 
-	default void add(String className, String name, String obfName, String desc, int required, int writeFlags,
+	default void addObf(String className, String name, String obfName, String desc, int required, int writeFlags,
 			Consumer<MethodNode> transformer) {
-		this.add(className, MethodNodeTransformer.create(name, obfName, desc, required, writeFlags, transformer));
+		this.add(className, MethodNodeTransformer.createObf(name, obfName, desc, required, writeFlags, transformer));
 	}
 
-	default void add(String className, String name, String desc, String obfName, String obfDesc, int required,
+	default void addObf(String className, String name, String desc, String obfName, String obfDesc, int required,
 			int writeFlags, Consumer<MethodNode> transformer) {
 		this.add(className,
-				MethodNodeTransformer.create(name, desc, obfName, obfDesc, required, writeFlags, transformer));
+				MethodNodeTransformer.createObf(name, desc, obfName, obfDesc, required, writeFlags, transformer));
 	}
 
 }

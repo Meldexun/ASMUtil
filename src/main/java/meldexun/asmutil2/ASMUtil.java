@@ -197,11 +197,11 @@ public class ASMUtil {
 		return find(classNode, MethodNodeUtil.matching(name, desc));
 	}
 
-	public static MethodNode find(ClassNode classNode, String name, String obfName, String desc) {
+	public static MethodNode findObf(ClassNode classNode, String name, String obfName, String desc) {
 		return find(classNode, MethodNodeUtil.matching(name, obfName, desc));
 	}
 
-	public static MethodNode find(ClassNode classNode, String name, String desc, String obfName, String obfDesc) {
+	public static MethodNode findObf(ClassNode classNode, String name, String desc, String obfName, String obfDesc) {
 		return find(classNode, MethodNodeUtil.matching(name, desc, obfName, obfDesc));
 	}
 
