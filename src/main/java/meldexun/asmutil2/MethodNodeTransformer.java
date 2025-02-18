@@ -87,12 +87,12 @@ public class MethodNodeTransformer {
 
 	public static ClassNodeTransformer createObf(String name, String obfName, String desc, int required, int writeFlags,
 			Consumer<MethodNode> transformer) {
-		return create(MethodNodeUtil.matching(name, obfName, desc), required, writeFlags, transformer);
+		return create(MethodNodeUtil.matchingObf(name, obfName, desc), required, writeFlags, transformer);
 	}
 
 	public static ClassNodeTransformer createObf(String name, String desc, String obfName, String obfDesc, int required,
 			int writeFlags, Consumer<MethodNode> transformer) {
-		return create(MethodNodeUtil.matching(name, desc, obfName, obfDesc), required, writeFlags, transformer);
+		return create(MethodNodeUtil.matchingObf(name, desc, obfName, obfDesc), required, writeFlags, transformer);
 	}
 
 	public static ClassNodeTransformer create(Predicate<MethodNode> predicate, int required, int writeFlags,

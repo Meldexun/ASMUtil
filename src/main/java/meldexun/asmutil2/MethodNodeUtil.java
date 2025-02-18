@@ -23,11 +23,11 @@ class MethodNodeUtil {
 		return method -> name.equals(method.name) && desc.equals(method.desc);
 	}
 
-	static Predicate<MethodNode> matching(String name, String obfName, String desc) {
+	static Predicate<MethodNode> matchingObf(String name, String obfName, String desc) {
 		return method -> (obfName.equals(method.name) || name.equals(method.name)) && desc.equals(method.desc);
 	}
 
-	static Predicate<MethodNode> matching(String name, String desc, String obfName, String obfDesc) {
+	static Predicate<MethodNode> matchingObf(String name, String desc, String obfName, String obfDesc) {
 		return method -> obfName.equals(method.name) && obfDesc.equals(method.desc)
 				|| name.equals(method.name) && desc.equals(method.desc);
 	}
