@@ -105,6 +105,34 @@ public class InsnFinder<T extends AbstractInsnNode> {
 		return this.type(IntInsnNode.class).predicate(insn -> insn.operand == operand);
 	}
 
+	public InsnFinder<VarInsnNode> varInsn(String name) {
+		return this.varInsn(ASMUtil.findLocalVariable(this.method, name).index);
+	}
+
+	public InsnFinder<VarInsnNode> varInsn(String name, int ordinal) {
+		return this.varInsn(ASMUtil.findLocalVariable(this.method, name, ordinal).index);
+	}
+
+	public InsnFinder<VarInsnNode> varInsnDesc(String desc) {
+		return this.varInsn(ASMUtil.findLocalVariableDesc(this.method, desc).index);
+	}
+
+	public InsnFinder<VarInsnNode> varInsnDesc(String desc, int ordinal) {
+		return this.varInsn(ASMUtil.findLocalVariableDesc(this.method, desc, ordinal).index);
+	}
+
+	public InsnFinder<VarInsnNode> varInsn(String name, String desc) {
+		return this.varInsn(ASMUtil.findLocalVariable(this.method, name, desc).index);
+	}
+
+	public InsnFinder<VarInsnNode> varInsn(String name, String desc, int ordinal) {
+		return this.varInsn(ASMUtil.findLocalVariable(this.method, name, desc, ordinal).index);
+	}
+
+	public InsnFinder<VarInsnNode> varInsn(int var) {
+		return this.type(VarInsnNode.class).predicate(insn -> insn.var == var);
+	}
+
 	public InsnFinder<MethodInsnNode> methodInsn(String name) {
 		return this.type(MethodInsnNode.class).predicate(insn -> {
 			return insn.name.equals(name);
