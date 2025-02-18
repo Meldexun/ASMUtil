@@ -71,6 +71,15 @@ public interface IClassTransformerRegistry {
 				MethodNodeTransformer.createOptional(name, desc, obfName, obfDesc, writeFlags, transformer));
 	}
 
+	default void add(String className, String name, int required, int writeFlags, Consumer<MethodNode> transformer) {
+		this.add(className, MethodNodeTransformer.create(name, required, writeFlags, transformer));
+	}
+
+	default void addObf(String className, String name, String obfName, int required, int writeFlags,
+			Consumer<MethodNode> transformer) {
+		this.add(className, MethodNodeTransformer.create(name, obfName, required, writeFlags, transformer));
+	}
+
 	default void add(String className, String name, String desc, int required, int writeFlags,
 			Consumer<MethodNode> transformer) {
 		this.add(className, MethodNodeTransformer.create(name, desc, required, writeFlags, transformer));
