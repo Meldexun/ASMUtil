@@ -214,28 +214,28 @@ public class ASMUtil {
 		throw new NoSuchElementException();
 	}
 
-	public static <T extends AbstractInsnNode> InsnFinder<T> first(MethodNode methodNode) {
-		return InsnFinder.<T>create().first(methodNode);
+	public static InsnFinder<AbstractInsnNode> first(MethodNode methodNode) {
+		return InsnFinder.create().first(methodNode);
 	}
 
-	public static <T extends AbstractInsnNode> InsnFinder<T> last(MethodNode methodNode) {
-		return InsnFinder.<T>create().last(methodNode);
+	public static InsnFinder<AbstractInsnNode> last(MethodNode methodNode) {
+		return InsnFinder.create().last(methodNode);
 	}
 
-	public static <T extends AbstractInsnNode> InsnFinder<T> nextExclusive(AbstractInsnNode startExclusive) {
-		return InsnFinder.<T>create().nextExclusive(startExclusive);
+	public static InsnFinder<AbstractInsnNode> nextExclusive(AbstractInsnNode startExclusive) {
+		return InsnFinder.create().nextExclusive(startExclusive);
 	}
 
-	public static <T extends AbstractInsnNode> InsnFinder<T> prevExclusive(AbstractInsnNode startExclusive) {
-		return InsnFinder.<T>create().prevExclusive(startExclusive);
+	public static InsnFinder<AbstractInsnNode> prevExclusive(AbstractInsnNode startExclusive) {
+		return InsnFinder.create().prevExclusive(startExclusive);
 	}
 
-	public static <T extends AbstractInsnNode> InsnFinder<T> next(AbstractInsnNode startInclusive) {
-		return InsnFinder.<T>create().next(startInclusive);
+	public static InsnFinder<AbstractInsnNode> next(AbstractInsnNode startInclusive) {
+		return InsnFinder.create().next(startInclusive);
 	}
 
-	public static <T extends AbstractInsnNode> InsnFinder<T> prev(AbstractInsnNode startInclusive) {
-		return InsnFinder.<T>create().prev(startInclusive);
+	public static InsnFinder<AbstractInsnNode> prev(AbstractInsnNode startInclusive) {
+		return InsnFinder.create().prev(startInclusive);
 	}
 
 	public static InsnList listOf(AbstractInsnNode insn0) {

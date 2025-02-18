@@ -27,7 +27,7 @@ public class InsnFinder<T extends AbstractInsnNode> {
 	private Predicate<T> predicate;
 	private int ordinal;
 
-	public static <T extends AbstractInsnNode> InsnFinder<T> create() {
+	public static InsnFinder<AbstractInsnNode> create() {
 		return new InsnFinder<>();
 	}
 
