@@ -215,27 +215,27 @@ public class ASMUtil {
 	}
 
 	public static InsnFinder<AbstractInsnNode> first(MethodNode methodNode) {
-		return InsnFinder.create(methodNode).first();
+		return InsnFinder.first(methodNode);
 	}
 
 	public static InsnFinder<AbstractInsnNode> last(MethodNode methodNode) {
-		return InsnFinder.create(methodNode).last();
+		return InsnFinder.last(methodNode);
 	}
 
 	public static InsnFinder<AbstractInsnNode> nextExclusive(MethodNode methodNode, AbstractInsnNode startExclusive) {
-		return InsnFinder.create(methodNode).nextExclusive(startExclusive);
+		return InsnFinder.nextExclusive(methodNode, startExclusive);
 	}
 
 	public static InsnFinder<AbstractInsnNode> prevExclusive(MethodNode methodNode, AbstractInsnNode startExclusive) {
-		return InsnFinder.create(methodNode).prevExclusive(startExclusive);
+		return InsnFinder.prevExclusive(methodNode, startExclusive);
 	}
 
 	public static InsnFinder<AbstractInsnNode> next(MethodNode methodNode, AbstractInsnNode startInclusive) {
-		return InsnFinder.create(methodNode).next(startInclusive);
+		return InsnFinder.next(methodNode, startInclusive);
 	}
 
 	public static InsnFinder<AbstractInsnNode> prev(MethodNode methodNode, AbstractInsnNode startInclusive) {
-		return InsnFinder.create(methodNode).prev(startInclusive);
+		return InsnFinder.prev(methodNode, startInclusive);
 	}
 
 	public static InsnList listOf(AbstractInsnNode insn0) {

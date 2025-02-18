@@ -22,47 +22,41 @@ import org.objectweb.asm.tree.VarInsnNode;
 public class InsnFinder<T extends AbstractInsnNode> {
 
 	private final MethodNode method;
-	private AbstractInsnNode startInclusive;
-	private UnaryOperator<AbstractInsnNode> advance;
+	private final AbstractInsnNode startInclusive;
+	private final UnaryOperator<AbstractInsnNode> advance;
 	private Class<T> type;
 	private int opcode = -1;
 	private Predicate<T> predicate;
 	private int ordinal;
 
-	public InsnFinder(MethodNode method) {
+	public InsnFinder(MethodNode method, AbstractInsnNode startInclusive, UnaryOperator<AbstractInsnNode> advance) {
 		this.method = Objects.requireNonNull(method);
+		this.startInclusive = Objects.requireNonNull(startInclusive);
+		this.advance = Objects.requireNonNull(advance);
 	}
 
-	public static InsnFinder<AbstractInsnNode> create(MethodNode method) {
-		return new InsnFinder<>(method);
+	public static InsnFinder<AbstractInsnNode> first(MethodNode method) {
+		return next(method, method.instructions.getFirst());
 	}
 
-	public InsnFinder<T> first() {
-		return this.next(this.method.instructions.getFirst());
+	public static InsnFinder<AbstractInsnNode> last(MethodNode method) {
+		return prev(method, method.instructions.getLast());
 	}
 
-	public InsnFinder<T> last() {
-		return this.prev(this.method.instructions.getLast());
+	public static InsnFinder<AbstractInsnNode> nextExclusive(MethodNode method, AbstractInsnNode startExclusive) {
+		return next(method, startExclusive.getNext());
 	}
 
-	public InsnFinder<T> nextExclusive(AbstractInsnNode startExclusive) {
-		return this.next(startExclusive.getNext());
+	public static InsnFinder<AbstractInsnNode> prevExclusive(MethodNode method, AbstractInsnNode startExclusive) {
+		return prev(method, startExclusive.getPrevious());
 	}
 
-	public InsnFinder<T> prevExclusive(AbstractInsnNode startExclusive) {
-		return this.prev(startExclusive.getPrevious());
+	public static InsnFinder<AbstractInsnNode> next(MethodNode method, AbstractInsnNode startInclusive) {
+		return new InsnFinder<>(method, startInclusive, AbstractInsnNode::getNext);
 	}
 
-	public InsnFinder<T> next(AbstractInsnNode startInclusive) {
-		this.startInclusive = startInclusive;
-		this.advance = AbstractInsnNode::getNext;
-		return this;
-	}
-
-	public InsnFinder<T> prev(AbstractInsnNode startInclusive) {
-		this.startInclusive = startInclusive;
-		this.advance = AbstractInsnNode::getPrevious;
-		return this;
+	public static InsnFinder<AbstractInsnNode> prev(MethodNode method, AbstractInsnNode startInclusive) {
+		return new InsnFinder<>(method, startInclusive, AbstractInsnNode::getPrevious);
 	}
 
 	public InsnFinder<AbstractInsnNode> findThenNextExclusive() {
