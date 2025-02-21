@@ -190,7 +190,7 @@ public class ASMUtil {
 	}
 
 	public static MethodNode findObf(ClassNode classNode, String name, String obfName) {
-		return find(classNode, MethodNodeUtil.matching(name, obfName));
+		return find(classNode, MethodNodeUtil.matchingObf(name, obfName));
 	}
 
 	public static MethodNode find(ClassNode classNode, String name, String desc) {
