@@ -163,6 +163,10 @@ public class ASMUtil {
 		if (insn instanceof FrameNode) {
 			return "";
 		}
+		return opcodeName(insn.getOpcode());
+	}
+
+	static String opcodeName(int opcode) {
 		return Arrays.stream(Opcodes.class.getFields())
 				.filter(field -> Modifier.isStatic(field.getModifiers()))
 				.filter(field -> field.getType() == int.class)
@@ -174,7 +178,7 @@ public class ASMUtil {
 				.filter(field -> !field.getName().startsWith("F_"))
 				.filter(field -> {
 					try {
-						return field.getInt(null) == insn.getOpcode();
+						return field.getInt(null) == opcode;
 					} catch (IllegalArgumentException | IllegalAccessException e) {
 						// ignore
 						return false;
@@ -182,36 +186,51 @@ public class ASMUtil {
 				})
 				.map(Field::getName)
 				.findFirst()
-				.orElse("UNKNOWN");
+				.orElse(Integer.toString(opcode));
 	}
 
 	public static MethodNode find(ClassNode classNode, String name) {
-		return find(classNode, MethodNodeUtil.matching(name));
+		return find(classNode, MethodNodeUtil.matching(name), MethodNodeUtil.errorDetails(name));
 	}
 
 	public static MethodNode findObf(ClassNode classNode, String name, String obfName) {
-		return find(classNode, MethodNodeUtil.matchingObf(name, obfName));
+		return find(classNode, MethodNodeUtil.matchingObf(name, obfName),
+				MethodNodeUtil.errorDetailsObf(name, obfName));
 	}
 
 	public static MethodNode find(ClassNode classNode, String name, String desc) {
-		return find(classNode, MethodNodeUtil.matching(name, desc));
+		return find(classNode, MethodNodeUtil.matching(name, desc), MethodNodeUtil.errorDetails(name, desc));
 	}
 
 	public static MethodNode findObf(ClassNode classNode, String name, String obfName, String desc) {
-		return find(classNode, MethodNodeUtil.matchingObf(name, obfName, desc));
+		return find(classNode, MethodNodeUtil.matchingObf(name, obfName, desc),
+				MethodNodeUtil.errorDetailsObf(name, obfName, desc));
 	}
 
 	public static MethodNode findObf(ClassNode classNode, String name, String desc, String obfName, String obfDesc) {
-		return find(classNode, MethodNodeUtil.matchingObf(name, desc, obfName, obfDesc));
+		return find(classNode, MethodNodeUtil.matchingObf(name, desc, obfName, obfDesc),
+				MethodNodeUtil.errorDetailsObf(name, desc, obfName, obfDesc));
 	}
 
+	@Deprecated
 	public static MethodNode find(ClassNode classNode, Predicate<MethodNode> predicate) {
+		return find(classNode, predicate, null);
+	}
+
+	public static MethodNode find(ClassNode classNode, Predicate<MethodNode> predicate,
+			Consumer<StringBuilder> errorDetails) {
 		for (MethodNode methodNode : classNode.methods) {
 			if (predicate.test(methodNode)) {
 				return methodNode;
 			}
 		}
-		throw new NoSuchElementException();
+		StringBuilder sb = new StringBuilder();
+		sb.append("No matching method found!");
+		if (errorDetails != null) {
+			sb.append(" ");
+			errorDetails.accept(sb);
+		}
+		throw new NoSuchElementException(sb.toString());
 	}
 
 	public static InsnFinder<AbstractInsnNode> first(MethodNode methodNode) {
@@ -455,7 +474,8 @@ public class ASMUtil {
 				return localVariable;
 			}
 		}
-		throw new NoSuchElementException();
+		throw new NoSuchElementException(
+				String.format("No local variable with name=%s desc=%s ordinal=%s found!", name, desc, ordinal));
 	}
 
 	public static void addLocalVariable(MethodNode methodNode, String name, String desc, LabelNode start, LabelNode end) {

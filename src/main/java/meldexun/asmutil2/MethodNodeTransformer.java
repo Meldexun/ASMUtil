@@ -72,38 +72,55 @@ public class MethodNodeTransformer {
 
 	public static ClassNodeTransformer create(String name, int required, int writeFlags,
 			Consumer<MethodNode> transformer) {
-		return create(MethodNodeUtil.matching(name), required, writeFlags, transformer);
+		return create(MethodNodeUtil.matching(name), required, writeFlags, transformer,
+				MethodNodeUtil.errorDetails(name));
 	}
 
 	public static ClassNodeTransformer createObf(String name, String obfName, int required, int writeFlags,
 			Consumer<MethodNode> transformer) {
-		return create(MethodNodeUtil.matchingObf(name, obfName), required, writeFlags, transformer);
+		return create(MethodNodeUtil.matchingObf(name, obfName), required, writeFlags, transformer,
+				MethodNodeUtil.errorDetailsObf(name, obfName));
 	}
 
 	public static ClassNodeTransformer create(String name, String desc, int required, int writeFlags,
 			Consumer<MethodNode> transformer) {
-		return create(MethodNodeUtil.matching(name, desc), required, writeFlags, transformer);
+		return create(MethodNodeUtil.matching(name, desc), required, writeFlags, transformer,
+				MethodNodeUtil.errorDetails(name, desc));
 	}
 
 	public static ClassNodeTransformer createObf(String name, String obfName, String desc, int required, int writeFlags,
 			Consumer<MethodNode> transformer) {
-		return create(MethodNodeUtil.matchingObf(name, obfName, desc), required, writeFlags, transformer);
+		return create(MethodNodeUtil.matchingObf(name, obfName, desc), required, writeFlags, transformer,
+				MethodNodeUtil.errorDetailsObf(name, obfName, desc));
 	}
 
 	public static ClassNodeTransformer createObf(String name, String desc, String obfName, String obfDesc, int required,
 			int writeFlags, Consumer<MethodNode> transformer) {
-		return create(MethodNodeUtil.matchingObf(name, desc, obfName, obfDesc), required, writeFlags, transformer);
+		return create(MethodNodeUtil.matchingObf(name, desc, obfName, obfDesc), required, writeFlags, transformer,
+				MethodNodeUtil.errorDetailsObf(name, desc, obfName, obfDesc));
+	}
+
+	@Deprecated
+	public static ClassNodeTransformer create(Predicate<MethodNode> predicate, int required, int writeFlags,
+			Consumer<MethodNode> transformer) {
+		return create(predicate, required, writeFlags, transformer, null);
 	}
 
 	public static ClassNodeTransformer create(Predicate<MethodNode> predicate, int required, int writeFlags,
-			Consumer<MethodNode> transformer) {
+			Consumer<MethodNode> transformer, Consumer<StringBuilder> errorDetails) {
 		return ClassNodeTransformer.create(writeFlags, classNode -> {
 			int transformedMethodCount = 0;
 			for (MethodNode method : classNode.methods) {
 				if (predicate.test(method)) {
 					if (required > 0 && transformedMethodCount >= required) {
-						throw new ClassTransformException(
-								String.format("Found more method transform targets than expected (%s)", required));
+						StringBuilder sb = new StringBuilder();
+						sb.append("Found more method transform targets than expected!");
+						sb.append(" ").append("expected=").append(required);
+						if (errorDetails != null) {
+							sb.append(" ");
+							errorDetails.accept(sb);
+						}
+						throw new ClassTransformException(sb.toString());
 					}
 					if (!ASMUtil.DISABLE_LOGGING) {
 						ASMUtil.LOGGER.info("Transforming method {}#{}{}", classNode.name, method.name, method.desc);
@@ -113,9 +130,15 @@ public class MethodNodeTransformer {
 				}
 			}
 			if (required > 0 && transformedMethodCount < required) {
-				throw new ClassTransformException(
-						String.format("Found less method transform targets (%s) than expected (%s)",
-								transformedMethodCount, required));
+				StringBuilder sb = new StringBuilder();
+				sb.append("Found less method transform targets than expected!");
+				sb.append(" ").append("expected=").append(required);
+				sb.append(" ").append("found=").append(transformedMethodCount);
+				if (errorDetails != null) {
+					sb.append(" ");
+					errorDetails.accept(sb);
+				}
+				throw new ClassTransformException(sb.toString());
 			}
 			return transformedMethodCount > 0;
 		});
