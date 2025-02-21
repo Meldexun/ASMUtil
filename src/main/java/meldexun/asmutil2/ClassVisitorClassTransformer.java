@@ -17,6 +17,10 @@ public abstract class ClassVisitorClassTransformer<T extends ClassVisitor> exten
 		if (transformInfo == null) {
 			return null;
 		}
+		if (basicClass == null) {
+			ASMUtil.LOGGER.debug("Skipping transformation of non-existing class {}", name);
+			return null;
+		}
 		ClassReader classReader = new ClassReader(basicClass);
 		Lazy<ClassWriter> classWriter = new Lazy<>(() -> this.createClassWriter(transformInfo.writeFlags()));
 		T classVisitor = transformInfo.visitor(classWriter);
