@@ -41,7 +41,7 @@ class MethodNodeUtil {
 
 	static Consumer<StringBuilder> errorDetailsObf(String name, String obfName) {
 		return sb -> {
-			sb.append("name=").append(name).append("|").append(obfName);
+			sb.append("name=[").append(name).append(", ").append(obfName).append("]");
 		};
 	}
 
@@ -55,7 +55,7 @@ class MethodNodeUtil {
 
 	static Consumer<StringBuilder> errorDetailsObf(String name, String obfName, String desc) {
 		return sb -> {
-			sb.append("name=").append(name).append("|").append(obfName);
+			sb.append("name=[").append(name).append(", ").append(obfName).append("]");
 			sb.append(" ");
 			sb.append("desc=").append(desc);
 		};
@@ -63,9 +63,9 @@ class MethodNodeUtil {
 
 	static Consumer<StringBuilder> errorDetailsObf(String name, String desc, String obfName, String obfDesc) {
 		return sb -> {
-			sb.append("name=").append(name).append("|").append(obfName);
+			sb.append("name=[").append(name).append(", ").append(obfName).append("]");
 			sb.append(" ");
-			sb.append("desc=").append(desc).append("|").append(obfDesc);
+			sb.append("desc=[").append(desc).append(", ").append(obfDesc).append("]");
 		};
 	}
 

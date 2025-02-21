@@ -39,7 +39,7 @@ class InstructionUtil {
 		return sb -> {
 			sb.append("owner=").append(owner);
 			sb.append(" ");
-			sb.append("name=").append(name).append("|").append(obfName);
+			sb.append("name=[").append(name).append(", ").append(obfName).append("]");
 			sb.append(" ");
 			sb.append("desc=").append(desc);
 		};
@@ -48,11 +48,11 @@ class InstructionUtil {
 	static Consumer<StringBuilder> errorDetailsObf(String owner, String name, String desc, String obfOwner,
 			String obfName, String obfDesc) {
 		return sb -> {
-			sb.append("owner=").append(owner).append("|").append(obfOwner);
+			sb.append("owner=[").append(owner).append(", ").append(obfOwner).append("]");
 			sb.append(" ");
-			sb.append("name=").append(name).append("|").append(obfName);
+			sb.append("name=[").append(name).append(", ").append(obfName).append("]");
 			sb.append(" ");
-			sb.append("desc=").append(desc).append("|").append(obfDesc);
+			sb.append("desc=[").append(desc).append(", ").append(obfDesc).append("]");
 		};
 	}
 
