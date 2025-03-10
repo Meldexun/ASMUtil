@@ -5,7 +5,6 @@
 
 package meldexun.asmutil2;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,8 +14,9 @@ public abstract class HashMapClassNodeClassTransformer extends ClassNodeClassTra
 	private final Map<String, List<ClassNodeTransformer>> classTransformers = new HashMap<>();
 
 	protected HashMapClassNodeClassTransformer() {
-		this.registerTransformers((className, transformer) -> this.classTransformers
-				.computeIfAbsent(className, k -> new ArrayList<>()).add(transformer));
+		this.registerTransformers((className, transformer) -> {
+			this.classTransformers.computeIfAbsent(className, k -> SortedArrayList.create()).add(transformer);
+		});
 	}
 
 	protected abstract void registerTransformers(IClassTransformerRegistry registry);

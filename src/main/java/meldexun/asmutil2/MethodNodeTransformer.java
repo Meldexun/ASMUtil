@@ -134,6 +134,7 @@ public class MethodNodeTransformer {
 		private int minMatches = 1;
 		private int maxMatches = 1;
 		private int writeFlags;
+		private int priority;
 
 		public Builder(SignatureMatcher<MethodNode> signatureMatcher) {
 			this(signatureMatcher, signatureMatcher);
@@ -159,6 +160,11 @@ public class MethodNodeTransformer {
 			return this;
 		}
 
+		public Builder priority(int priority) {
+			this.priority = priority;
+			return this;
+		}
+
 		public ClassNodeTransformer build(Consumer<MethodNode> transformer) {
 			return this.build(method -> {
 				transformer.accept(method);
@@ -173,8 +179,9 @@ public class MethodNodeTransformer {
 			int minMatches = this.minMatches;
 			int maxMatches = this.maxMatches;
 			int writeFlags = this.writeFlags;
+			int priority = this.priority;
 
-			return ClassNodeTransformer.create(writeFlags, classNode -> {
+			return ClassNodeTransformer.create(writeFlags, priority, classNode -> {
 				boolean transformed = false;
 				int matches = 0;
 				for (MethodNode method : classNode.methods) {
