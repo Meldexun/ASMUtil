@@ -6,9 +6,7 @@
 package meldexun.asmutil2;
 
 import java.util.List;
-import java.util.function.Supplier;
 
-import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.tree.ClassNode;
 
@@ -20,15 +18,39 @@ public abstract class ClassNodeClassTransformer extends ClassVisitorClassTransfo
 		if (transformers == null || transformers.isEmpty()) {
 			return null;
 		}
-		int writeFlags = ReductionUtil.intOr(transformers, ClassNodeTransformer::writeFlags);
-		int readFlags = (writeFlags & ClassWriter.COMPUTE_FRAMES) != 0 ? ClassReader.SKIP_FRAMES : 0;
-		return ITransformInfo.create((Supplier<ClassNode>) ClassNode::new, (classNode, classWriter) -> {
-			if (!ReductionUtil.booleanOr(transformers, classNode, ClassNodeTransformer::transform)) {
-				return false;
+		return new ITransformInfo<ClassNode>() {
+			private int writeFlags;
+
+			@Override
+			public ClassNode visitor(Lazy<ClassWriter> classWriter) {
+				return new ClassNode();
 			}
-			classNode.accept(classWriter.get());
-			return true;
-		}, writeFlags, readFlags);
+
+			@Override
+			public boolean transform(ClassNode classVisitor, Lazy<ClassWriter> classWriter) {
+				boolean transformed = false;
+				for (ClassNodeTransformer transformer : transformers) {
+					if (transformer.transform(classVisitor)) {
+						this.writeFlags |= transformer.writeFlags();
+						transformed = true;
+					}
+				}
+				if (transformed) {
+					classVisitor.accept(classWriter.get());
+				}
+				return transformed;
+			}
+
+			@Override
+			public int writeFlags() {
+				return this.writeFlags;
+			}
+
+			@Override
+			public int readFlags() {
+				return 0;
+			}
+		};
 	}
 
 	protected abstract List<ClassNodeTransformer> getClassNodeTransformers(String className);
