@@ -34,7 +34,7 @@ class InsnSpliterator implements Spliterator<AbstractInsnNode> {
 		this.estimatedSize = instructions.size();
 		this.index = start;
 		this.end = end;
-		this.node = instructions.get(start);
+		this.node = start < end ? instructions.get(start) : null;
 	}
 
 	@Override
