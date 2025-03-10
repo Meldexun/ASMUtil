@@ -26,6 +26,7 @@ public final class ClassUtil {
 
 	public static final class Configuration {
 
+		public static final Configuration DEFAULT = new Configuration(Configuration.class.getClassLoader());
 		private final ClassLoader classLoader;
 		private final Map<String, String> obfuscationMap;
 		private final Map<String, String> deobfuscationMap;
@@ -50,9 +51,9 @@ public final class ClassUtil {
 				return false;
 			}
 			Configuration other = (Configuration) obj;
-			return this.classLoader == other.classLoader
-					&& this.obfuscationMap == other.obfuscationMap
-					&& this.deobfuscationMap == other.deobfuscationMap;
+			return this.classLoader.equals(other.classLoader)
+					&& Objects.equals(this.obfuscationMap, other.obfuscationMap)
+					&& Objects.equals(this.deobfuscationMap, other.deobfuscationMap);
 		}
 
 		@Override
@@ -97,6 +98,7 @@ public final class ClassUtil {
 	}
 
 	private static final Map<Configuration, ClassUtil> INSTANCES = new ConcurrentHashMap<>();
+	public static final ClassUtil DEFAULT = ClassUtil.getInstance(Configuration.DEFAULT);
 	private static final String OBJECT_CLASS_NAME = Object.class.getName().replace('.', '/');
 	private final Configuration configuration;
 	private final Map<String, ClassInfo> classInfoCache = new ConcurrentHashMap<>();
