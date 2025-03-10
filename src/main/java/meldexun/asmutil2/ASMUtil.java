@@ -190,26 +190,27 @@ public class ASMUtil {
 	}
 
 	public static MethodNode find(ClassNode classNode, String name) {
-		return find(classNode, MethodNodeUtil.matching(name), MethodNodeUtil.errorDetails(name));
+		return find(classNode, SignatureMatcher.matchingMethodName(name));
 	}
 
 	public static MethodNode findObf(ClassNode classNode, String name, String obfName) {
-		return find(classNode, MethodNodeUtil.matchingObf(name, obfName),
-				MethodNodeUtil.errorDetailsObf(name, obfName));
+		return find(classNode, SignatureMatcher.matchingMethodNameObf(name, obfName));
 	}
 
 	public static MethodNode find(ClassNode classNode, String name, String desc) {
-		return find(classNode, MethodNodeUtil.matching(name, desc), MethodNodeUtil.errorDetails(name, desc));
+		return find(classNode, SignatureMatcher.matchingMethodNameDesc(name, desc));
 	}
 
 	public static MethodNode findObf(ClassNode classNode, String name, String obfName, String desc) {
-		return find(classNode, MethodNodeUtil.matchingObf(name, obfName, desc),
-				MethodNodeUtil.errorDetailsObf(name, obfName, desc));
+		return find(classNode, SignatureMatcher.matchingMethodNameDescObf(name, obfName, desc));
 	}
 
 	public static MethodNode findObf(ClassNode classNode, String name, String desc, String obfName, String obfDesc) {
-		return find(classNode, MethodNodeUtil.matchingObf(name, desc, obfName, obfDesc),
-				MethodNodeUtil.errorDetailsObf(name, desc, obfName, obfDesc));
+		return find(classNode, SignatureMatcher.matchingMethodNameDescObf(name, obfName, desc, obfDesc));
+	}
+
+	public static MethodNode find(ClassNode classNode, SignatureMatcher<MethodNode> signatureMatcher) {
+		return find(classNode, signatureMatcher, signatureMatcher);
 	}
 
 	public static MethodNode find(ClassNode classNode, Predicate<MethodNode> predicate,

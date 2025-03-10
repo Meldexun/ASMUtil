@@ -167,98 +167,73 @@ public class InsnFinder<T extends AbstractInsnNode> {
 	}
 
 	public InsnFinder<MethodInsnNode> methodInsn(String name) {
-		return this.type(MethodInsnNode.class).predicate(insn -> {
-			return insn.name.equals(name);
-		}, InstructionUtil.errorDetails(name));
+		return this.type(MethodInsnNode.class).predicate(SignatureMatcher.matchingMethodInsnName(name));
 	}
 
 	public InsnFinder<MethodInsnNode> methodInsnObf(String name, String obfName) {
-		return this.type(MethodInsnNode.class).predicate(insn -> {
-			return insn.name.equals(obfName) || insn.name.equals(name);
-		}, InstructionUtil.errorDetailsObf(name, obfName));
+		return this.type(MethodInsnNode.class).predicate(SignatureMatcher.matchingMethodInsnNameObf(name, obfName));
 	}
 
 	public InsnFinder<MethodInsnNode> methodInsn(String name, String desc) {
-		return this.type(MethodInsnNode.class).predicate(insn -> {
-			return insn.name.equals(name) && insn.desc.equals(desc);
-		}, InstructionUtil.errorDetails(name, desc));
+		return this.type(MethodInsnNode.class).predicate(SignatureMatcher.matchingMethodInsnNameDesc(name, desc));
 	}
 
 	public InsnFinder<MethodInsnNode> methodInsnObf(String name, String obfName, String desc) {
-		return this.type(MethodInsnNode.class).predicate(insn -> {
-			return (insn.name.equals(obfName) || insn.name.equals(name)) && insn.desc.equals(desc);
-		}, InstructionUtil.errorDetailsObf(name, obfName, desc));
+		return this.type(MethodInsnNode.class)
+				.predicate(SignatureMatcher.matchingMethodInsnNameDescObf(name, obfName, desc));
 	}
 
 	public InsnFinder<MethodInsnNode> methodInsn(String owner, String name, String desc) {
-		return this.type(MethodInsnNode.class).predicate(insn -> {
-			return insn.owner.equals(owner) && insn.name.equals(name) && insn.desc.equals(desc);
-		}, InstructionUtil.errorDetails(owner, name, desc));
+		return this.type(MethodInsnNode.class)
+				.predicate(SignatureMatcher.matchingMethodInsnOwnerNameDesc(owner, name, desc));
 	}
 
 	public InsnFinder<MethodInsnNode> methodInsnObf(String owner, String name, String obfName, String desc) {
-		return this.type(MethodInsnNode.class).predicate(insn -> {
-			return insn.owner.equals(owner) && (insn.name.equals(obfName) || insn.name.equals(name))
-					&& insn.desc.equals(desc);
-		}, InstructionUtil.errorDetailsObf(owner, name, obfName, desc));
+		return this.type(MethodInsnNode.class)
+				.predicate(SignatureMatcher.matchingMethodInsnOwnerNameDescObf(owner, name, obfName, desc));
 	}
 
 	public InsnFinder<MethodInsnNode> methodInsnObf(String owner, String name, String desc, String obfOwner,
 			String obfName, String obfDesc) {
-		return this.type(MethodInsnNode.class).predicate(insn -> {
-			return insn.owner.equals(obfOwner) && insn.name.equals(obfName) && insn.desc.equals(obfDesc)
-					|| insn.owner.equals(owner) && insn.name.equals(name) && insn.desc.equals(desc);
-		}, InstructionUtil.errorDetailsObf(owner, name, desc, obfOwner, obfName, obfDesc));
+		return this.type(MethodInsnNode.class).predicate(
+				SignatureMatcher.matchingMethodInsnOwnerNameDescObf(owner, obfOwner, name, obfName, desc, obfDesc));
 	}
 
 	public InsnFinder<FieldInsnNode> fieldInsn(String name) {
-		return this.type(FieldInsnNode.class).predicate(insn -> {
-			return insn.name.equals(name);
-		}, InstructionUtil.errorDetails(name));
+		return this.type(FieldInsnNode.class).predicate(SignatureMatcher.matchingFieldInsnName(name));
 	}
 
 	public InsnFinder<FieldInsnNode> fieldInsnObf(String name, String obfName) {
-		return this.type(FieldInsnNode.class).predicate(insn -> {
-			return insn.name.equals(obfName) || insn.name.equals(name);
-		}, InstructionUtil.errorDetailsObf(name, obfName));
+		return this.type(FieldInsnNode.class).predicate(SignatureMatcher.matchingFieldInsnNameObf(name, obfName));
 	}
 
 	public InsnFinder<FieldInsnNode> fieldInsn(String name, String desc) {
-		return this.type(FieldInsnNode.class).predicate(insn -> {
-			return insn.name.equals(name) && insn.desc.equals(desc);
-		}, InstructionUtil.errorDetails(name, desc));
+		return this.type(FieldInsnNode.class).predicate(SignatureMatcher.matchingFieldInsnNameDesc(name, desc));
 	}
 
 	public InsnFinder<FieldInsnNode> fieldInsnObf(String name, String obfName, String desc) {
-		return this.type(FieldInsnNode.class).predicate(insn -> {
-			return (insn.name.equals(obfName) || insn.name.equals(name)) && insn.desc.equals(desc);
-		}, InstructionUtil.errorDetailsObf(name, obfName, desc));
+		return this.type(FieldInsnNode.class)
+				.predicate(SignatureMatcher.matchingFieldInsnNameDescObf(name, obfName, desc));
 	}
 
 	public InsnFinder<FieldInsnNode> fieldInsn(String owner, String name, String desc) {
-		return this.type(FieldInsnNode.class).predicate(insn -> {
-			return insn.owner.equals(owner) && insn.name.equals(name) && insn.desc.equals(desc);
-		}, InstructionUtil.errorDetails(owner, name, desc));
+		return this.type(FieldInsnNode.class)
+				.predicate(SignatureMatcher.matchingFieldInsnOwnerNameDesc(owner, name, desc));
 	}
 
 	public InsnFinder<FieldInsnNode> fieldInsnObf(String owner, String name, String obfName, String desc) {
-		return this.type(FieldInsnNode.class).predicate(insn -> {
-			return insn.owner.equals(owner) && (insn.name.equals(obfName) || insn.name.equals(name))
-					&& insn.desc.equals(desc);
-		}, InstructionUtil.errorDetailsObf(owner, name, obfName, desc));
+		return this.type(FieldInsnNode.class)
+				.predicate(SignatureMatcher.matchingFieldInsnOwnerNameDescObf(owner, name, obfName, desc));
 	}
 
 	public InsnFinder<FieldInsnNode> fieldInsnObf(String owner, String name, String desc, String obfOwner,
 			String obfName, String obfDesc) {
-		return this.type(FieldInsnNode.class).predicate(insn -> {
-			return insn.owner.equals(obfOwner) && insn.name.equals(obfName) && insn.desc.equals(obfDesc)
-					|| insn.owner.equals(owner) && insn.name.equals(name) && insn.desc.equals(desc);
-		}, InstructionUtil.errorDetailsObf(owner, name, desc, obfOwner, obfName, obfDesc));
+		return this.type(FieldInsnNode.class).predicate(
+				SignatureMatcher.matchingFieldInsnOwnerNameDescObf(owner, obfOwner, name, obfName, desc, obfDesc));
 	}
 
-	@Deprecated
-	public InsnFinder<T> predicate(Predicate<T> predicate) {
-		return this.predicate(predicate, null);
+	public InsnFinder<T> predicate(SignatureMatcher<T> signatureMatcher) {
+		return this.predicate(signatureMatcher, signatureMatcher);
 	}
 
 	public InsnFinder<T> predicate(Predicate<T> predicate, Consumer<StringBuilder> errorDetails) {
