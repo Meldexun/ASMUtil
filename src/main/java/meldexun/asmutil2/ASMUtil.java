@@ -212,11 +212,6 @@ public class ASMUtil {
 				MethodNodeUtil.errorDetailsObf(name, desc, obfName, obfDesc));
 	}
 
-	@Deprecated
-	public static MethodNode find(ClassNode classNode, Predicate<MethodNode> predicate) {
-		return find(classNode, predicate, null);
-	}
-
 	public static MethodNode find(ClassNode classNode, Predicate<MethodNode> predicate,
 			Consumer<StringBuilder> errorDetails) {
 		for (MethodNode methodNode : classNode.methods) {

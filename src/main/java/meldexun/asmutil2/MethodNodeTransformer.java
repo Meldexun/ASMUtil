@@ -36,11 +36,6 @@ public class MethodNodeTransformer {
 		return createObf(name, desc, obfName, obfDesc, 1, writeFlags, transformer);
 	}
 
-	public static ClassNodeTransformer create(Predicate<MethodNode> predicate, int writeFlags,
-			Consumer<MethodNode> transformer) {
-		return create(predicate, 1, writeFlags, transformer);
-	}
-
 	public static ClassNodeTransformer createOptional(String name, int writeFlags, Consumer<MethodNode> transformer) {
 		return create(name, 0, writeFlags, transformer);
 	}
@@ -63,11 +58,6 @@ public class MethodNodeTransformer {
 	public static ClassNodeTransformer createObfOptional(String name, String desc, String obfName, String obfDesc,
 			int writeFlags, Consumer<MethodNode> transformer) {
 		return createObf(name, desc, obfName, obfDesc, 0, writeFlags, transformer);
-	}
-
-	public static ClassNodeTransformer createOptional(Predicate<MethodNode> predicate, int writeFlags,
-			Consumer<MethodNode> transformer) {
-		return create(predicate, 0, writeFlags, transformer);
 	}
 
 	public static ClassNodeTransformer create(String name, int required, int writeFlags,
@@ -98,12 +88,6 @@ public class MethodNodeTransformer {
 			int writeFlags, Consumer<MethodNode> transformer) {
 		return create(MethodNodeUtil.matchingObf(name, desc, obfName, obfDesc), required, writeFlags, transformer,
 				MethodNodeUtil.errorDetailsObf(name, desc, obfName, obfDesc));
-	}
-
-	@Deprecated
-	public static ClassNodeTransformer create(Predicate<MethodNode> predicate, int required, int writeFlags,
-			Consumer<MethodNode> transformer) {
-		return create(predicate, required, writeFlags, transformer, null);
 	}
 
 	public static ClassNodeTransformer create(Predicate<MethodNode> predicate, int required, int writeFlags,
