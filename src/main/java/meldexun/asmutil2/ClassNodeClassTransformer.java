@@ -10,6 +10,11 @@ import java.util.List;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.tree.ClassNode;
 
+/**
+ * Class transformer that uses ASM's tree API for class transformation.
+ * Works with {@link ClassNode} objects which provide a complete in-memory representation
+ * of a class that can be easily inspected and modified.
+ */
 public abstract class ClassNodeClassTransformer extends ClassVisitorClassTransformer<ClassNode> {
 
 	@Override
@@ -53,6 +58,12 @@ public abstract class ClassNodeClassTransformer extends ClassVisitorClassTransfo
 		};
 	}
 
+	/**
+	 * Provides the list of transformers to apply to a specific class.
+	 *
+	 * @param className the class name to get transformers for
+	 * @return list of transformers, or null/empty if no transformations needed
+	 */
 	protected abstract List<ClassNodeTransformer> getClassNodeTransformers(String className);
 
 }

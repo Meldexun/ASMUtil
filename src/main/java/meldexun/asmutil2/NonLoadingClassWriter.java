@@ -13,14 +13,30 @@ import org.objectweb.asm.ClassWriter;
 
 import meldexun.asmutil2.reader.ClassUtil;
 
+/**
+ * ClassWriter that determines common super classes without loading classes.
+ * Standard ClassWriter uses ClassLoader which can fail in transformation contexts.
+ * This implementation reads class files directly to compute type hierarchies.
+ */
 public class NonLoadingClassWriter extends ClassWriter {
 
 	private final ClassUtil classUtil;
 
+	/**
+	 * Creates a NonLoadingClassWriter with default class utilities.
+	 *
+	 * @param flags ClassWriter flags (e.g., COMPUTE_FRAMES, COMPUTE_MAXS)
+	 */
 	public NonLoadingClassWriter(int flags) {
 		this(flags, ClassUtil.DEFAULT);
 	}
 
+	/**
+	 * Creates a NonLoadingClassWriter with custom class utilities.
+	 *
+	 * @param flags ClassWriter flags (e.g., COMPUTE_FRAMES, COMPUTE_MAXS)
+	 * @param classUtil utility for reading class hierarchies
+	 */
 	public NonLoadingClassWriter(int flags, ClassUtil classUtil) {
 		super(flags);
 		this.classUtil = Objects.requireNonNull(classUtil);

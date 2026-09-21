@@ -20,6 +20,13 @@ import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.tree.TypeInsnNode;
 import org.objectweb.asm.tree.VarInsnNode;
 
+/**
+ * Fluent API for finding instructions in a method's instruction list.
+ * Supports searching by type, opcode, predicates, and specific instruction properties.
+ * Can search forward or backward from a starting position.
+ *
+ * @param <T> the type of instruction being searched for
+ */
 public class InsnFinder<T extends AbstractInsnNode> {
 
 	private static final UnaryOperator<AbstractInsnNode> NEXT = AbstractInsnNode::getNext;
@@ -33,12 +40,25 @@ public class InsnFinder<T extends AbstractInsnNode> {
 	private Consumer<StringBuilder> errorDetails;
 	private int ordinal;
 
+	/**
+	 * Creates an instruction finder.
+	 *
+	 * @param method the method to search in
+	 * @param startInclusive the instruction to start from
+	 * @param advance function to advance to the next/previous instruction
+	 */
 	public InsnFinder(MethodNode method, AbstractInsnNode startInclusive, UnaryOperator<AbstractInsnNode> advance) {
 		this.method = Objects.requireNonNull(method);
 		this.startInclusive = Objects.requireNonNull(startInclusive);
 		this.advance = Objects.requireNonNull(advance);
 	}
 
+	/**
+	 * Creates a finder starting from the first instruction.
+	 *
+	 * @param method the method to search
+	 * @return a new instruction finder
+	 */
 	public static InsnFinder<AbstractInsnNode> first(MethodNode method) {
 		return next(method, method.instructions.getFirst());
 	}
@@ -63,22 +83,49 @@ public class InsnFinder<T extends AbstractInsnNode> {
 		return new InsnFinder<>(method, startInclusive, PREVIOUS);
 	}
 
+	/**
+	 * Finds the matching instruction and creates a new finder starting after it.
+	 *
+	 * @return a new instruction finder
+	 */
 	public InsnFinder<AbstractInsnNode> findThenNextExclusive() {
 		return ASMUtil.nextExclusive(this.method, this.find());
 	}
 
+	/**
+	 * Finds the matching instruction and creates a new finder starting before it.
+	 *
+	 * @return a new instruction finder
+	 */
 	public InsnFinder<AbstractInsnNode> findThenPrevExclusive() {
 		return ASMUtil.prevExclusive(this.method, this.find());
 	}
 
+	/**
+	 * Finds the matching instruction and creates a new finder starting from it.
+	 *
+	 * @return a new instruction finder
+	 */
 	public InsnFinder<AbstractInsnNode> findThenNext() {
 		return ASMUtil.next(this.method, this.find());
 	}
 
+	/**
+	 * Finds the matching instruction and creates a new finder searching backwards from it.
+	 *
+	 * @return a new instruction finder
+	 */
 	public InsnFinder<AbstractInsnNode> findThenPrev() {
 		return ASMUtil.prev(this.method, this.find());
 	}
 
+	/**
+	 * Filters to match only instructions of a specific type.
+	 *
+	 * @param <R> the instruction type
+	 * @param type the instruction class to match
+	 * @return this finder
+	 */
 	@SuppressWarnings("unchecked")
 	public <R extends AbstractInsnNode> InsnFinder<R> type(Class<R> type) {
 		InsnFinder<R> n = (InsnFinder<R>) this;
@@ -86,26 +133,56 @@ public class InsnFinder<T extends AbstractInsnNode> {
 		return n;
 	}
 
+	/**
+	 * Filters to match only instructions with a specific opcode.
+	 *
+	 * @param opcode the opcode to match (e.g., Opcodes.ALOAD)
+	 * @return this finder
+	 */
 	public InsnFinder<T> opcode(int opcode) {
 		this.opcode = opcode;
 		return this;
 	}
 
+	/**
+	 * Finds a type instruction (NEW, INSTANCEOF, etc.) by descriptor.
+	 *
+	 * @param desc the type descriptor
+	 * @return this finder typed for TypeInsnNode
+	 */
 	public InsnFinder<TypeInsnNode> typeInsn(String desc) {
 		return this.type(TypeInsnNode.class).predicate(insn -> insn.desc.equals(desc),
 				sb -> sb.append("desc=").append(desc));
 	}
 
+	/**
+	 * Finds an LDC (load constant) instruction by constant value.
+	 *
+	 * @param cst the constant value to match
+	 * @return this finder typed for LdcInsnNode
+	 */
 	public InsnFinder<LdcInsnNode> ldcInsn(Object cst) {
 		return this.type(LdcInsnNode.class).predicate(insn -> Objects.equals(insn.cst, cst),
 				sb -> sb.append("cst=").append(cst));
 	}
 
+	/**
+	 * Finds an integer instruction (BIPUSH, SIPUSH) by operand value.
+	 *
+	 * @param operand the operand value to match
+	 * @return this finder typed for IntInsnNode
+	 */
 	public InsnFinder<IntInsnNode> intInsn(int operand) {
 		return this.type(IntInsnNode.class).predicate(insn -> insn.operand == operand,
 				sb -> sb.append("operand=").append(operand));
 	}
 
+	/**
+	 * Finds a variable instruction by local variable name.
+	 *
+	 * @param name the local variable name
+	 * @return this finder typed for VarInsnNode
+	 */
 	public InsnFinder<VarInsnNode> varInsn(String name) {
 		return this.varInsn(ASMUtil.findLocalVariable(this.method, name).index, sb -> {
 			sb.append("varName=").append(name);
@@ -166,6 +243,12 @@ public class InsnFinder<T extends AbstractInsnNode> {
 		});
 	}
 
+	/**
+	 * Finds a method invocation instruction by method name.
+	 *
+	 * @param name the method name
+	 * @return this finder typed for MethodInsnNode
+	 */
 	public InsnFinder<MethodInsnNode> methodInsn(String name) {
 		return this.type(MethodInsnNode.class).predicate(SignatureMatcher.matchingMethodInsnName(name));
 	}
@@ -199,6 +282,12 @@ public class InsnFinder<T extends AbstractInsnNode> {
 				SignatureMatcher.matchingMethodInsnOwnerNameDescObf(owner, obfOwner, name, obfName, desc, obfDesc));
 	}
 
+	/**
+	 * Finds a field access instruction by field name.
+	 *
+	 * @param name the field name
+	 * @return this finder typed for FieldInsnNode
+	 */
 	public InsnFinder<FieldInsnNode> fieldInsn(String name) {
 		return this.type(FieldInsnNode.class).predicate(SignatureMatcher.matchingFieldInsnName(name));
 	}
@@ -232,21 +321,46 @@ public class InsnFinder<T extends AbstractInsnNode> {
 				SignatureMatcher.matchingFieldInsnOwnerNameDescObf(owner, obfOwner, name, obfName, desc, obfDesc));
 	}
 
+	/**
+	 * Filters with a signature matcher.
+	 *
+	 * @param signatureMatcher the matcher to use
+	 * @return this finder
+	 */
 	public InsnFinder<T> predicate(SignatureMatcher<T> signatureMatcher) {
 		return this.predicate(signatureMatcher, signatureMatcher);
 	}
 
+	/**
+	 * Filters with a custom predicate and error details.
+	 *
+	 * @param predicate the predicate to test instructions
+	 * @param errorDetails consumer to append error details if not found
+	 * @return this finder
+	 */
 	public InsnFinder<T> predicate(Predicate<T> predicate, Consumer<StringBuilder> errorDetails) {
 		this.predicate = predicate;
 		this.errorDetails = errorDetails;
 		return this;
 	}
 
+	/**
+	 * Selects a specific occurrence when multiple instructions match.
+	 *
+	 * @param ordinal the occurrence index (0 for first match, 1 for second, etc.)
+	 * @return this finder
+	 */
 	public InsnFinder<T> ordinal(int ordinal) {
 		this.ordinal = ordinal;
 		return this;
 	}
 
+	/**
+	 * Executes the search and returns the matching instruction.
+	 *
+	 * @return the matching instruction
+	 * @throws NoSuchElementException if no matching instruction is found
+	 */
 	@SuppressWarnings("unchecked")
 	public T find() {
 		int i = 0;

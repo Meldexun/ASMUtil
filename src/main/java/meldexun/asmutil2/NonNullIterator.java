@@ -8,6 +8,12 @@ package meldexun.asmutil2;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+/**
+ * Base class for iterators that never return null elements.
+ * Subclasses implement computeNext() to determine the next element.
+ *
+ * @param <E> the element type
+ */
 abstract class NonNullIterator<E> implements Iterator<E> {
 
 	private enum State {

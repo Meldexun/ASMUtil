@@ -5,6 +5,10 @@
 
 package meldexun.asmutil2;
 
+/**
+ * Base implementation of {@link IClassTransformer} that provides error handling,
+ * logging, and optional class export functionality.
+ */
 public abstract class AbstractClassTransformer implements IClassTransformer {
 
 	@Override
@@ -25,8 +29,12 @@ public abstract class AbstractClassTransformer implements IClassTransformer {
 	}
 
 	/**
-	 * @return {@code null} if no transformation occured, otherwise the transformed
-	 *         class
+	 * Performs the actual class transformation. Subclasses implement this to define transformation logic.
+	 *
+	 * @param obfName the obfuscated (SRG) name of the class
+	 * @param name the deobfuscated name of the class
+	 * @param basicClass the original class bytecode
+	 * @return {@code null} if no transformation occurred, otherwise the transformed class bytecode
 	 */
 	protected abstract byte[] transformOrNull(String obfName, String name, byte[] basicClass);
 

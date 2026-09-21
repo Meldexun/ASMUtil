@@ -14,14 +14,38 @@ import org.objectweb.asm.tree.FieldNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.MethodNode;
 
+/**
+ * Matcher for method and field signatures with support for obfuscated names.
+ * Combines predicate testing with error detail generation for better error messages.
+ *
+ * @param <T> the type to match (MethodNode, FieldNode, MethodInsnNode, or FieldInsnNode)
+ */
 public interface SignatureMatcher<T> extends Predicate<T>, Consumer<StringBuilder> {
 
+	/**
+	 * Represents a method or field signature with owner, name, and descriptor.
+	 */
 	interface Signature {
 
+		/**
+		 * Returns the owner (class name) of this member.
+		 *
+		 * @return the owner
+		 */
 		String owner();
 
+		/**
+		 * Returns the name of this member.
+		 *
+		 * @return the name
+		 */
 		String name();
 
+		/**
+		 * Returns the descriptor of this member.
+		 *
+		 * @return the descriptor
+		 */
 		String desc();
 
 		static Signature of(String owner, String name, String desc) {
@@ -61,8 +85,19 @@ public interface SignatureMatcher<T> extends Predicate<T>, Consumer<StringBuilde
 
 	}
 
+	/**
+	 * Appends error details to the StringBuilder for debugging failed matches.
+	 *
+	 * @param sb the StringBuilder to append to
+	 */
 	void accept(StringBuilder sb);
 
+	/**
+	 * Creates a matcher for fields by name.
+	 *
+	 * @param name the field name
+	 * @return a field matcher
+	 */
 	static SignatureMatcher<FieldNode> matchingFieldName(String name) {
 		return matchingName(Signature::of, name);
 	}

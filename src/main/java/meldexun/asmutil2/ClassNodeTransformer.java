@@ -10,12 +10,32 @@ import java.util.function.Predicate;
 
 import org.objectweb.asm.tree.ClassNode;
 
+/**
+ * Functional interface for transforming a {@link ClassNode}.
+ * Transformers can be prioritized and are sorted by priority when applied.
+ */
 public interface ClassNodeTransformer extends Comparable<ClassNodeTransformer> {
 
+	/**
+	 * Applies transformation to a ClassNode.
+	 *
+	 * @param classNode the class to transform
+	 * @return true if transformation was applied, false otherwise
+	 */
 	boolean transform(ClassNode classNode);
 
+	/**
+	 * Returns ClassWriter flags needed for bytecode generation.
+	 *
+	 * @return flags such as COMPUTE_FRAMES or COMPUTE_MAXS
+	 */
 	int writeFlags();
 
+	/**
+	 * Returns the priority of this transformer. Lower values execute first.
+	 *
+	 * @return the priority value
+	 */
 	int priority();
 
 	@Override
@@ -23,6 +43,13 @@ public interface ClassNodeTransformer extends Comparable<ClassNodeTransformer> {
 		return Integer.compare(priority(), o.priority());
 	}
 
+	/**
+	 * Creates a ClassNodeTransformer from a simple consumer.
+	 *
+	 * @param writeFlags ClassWriter flags for bytecode generation
+	 * @param transformer the transformation logic
+	 * @return a new ClassNodeTransformer
+	 */
 	static ClassNodeTransformer create(int writeFlags, Consumer<ClassNode> transformer) {
 		return create(writeFlags, classNode -> {
 			if (!ASMUtil.DISABLE_LOGGING) {
@@ -33,10 +60,25 @@ public interface ClassNodeTransformer extends Comparable<ClassNodeTransformer> {
 		});
 	}
 
+	/**
+	 * Creates a ClassNodeTransformer from a predicate.
+	 *
+	 * @param writeFlags ClassWriter flags for bytecode generation
+	 * @param transformer the transformation logic that returns whether transformation occurred
+	 * @return a new ClassNodeTransformer
+	 */
 	static ClassNodeTransformer create(int writeFlags, Predicate<ClassNode> transformer) {
 		return create(writeFlags, 0, transformer);
 	}
 
+	/**
+	 * Creates a ClassNodeTransformer with a specific priority.
+	 *
+	 * @param writeFlags ClassWriter flags for bytecode generation
+	 * @param priority the priority (lower values execute first)
+	 * @param transformer the transformation logic
+	 * @return a new ClassNodeTransformer
+	 */
 	static ClassNodeTransformer create(int writeFlags, int priority, Predicate<ClassNode> transformer) {
 		return new ClassNodeTransformer() {
 

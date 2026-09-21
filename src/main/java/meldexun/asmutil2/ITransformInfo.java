@@ -12,14 +12,43 @@ import java.util.function.Supplier;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 
+/**
+ * Encapsulates transformation information including the visitor to use,
+ * transformation logic, and ASM read/write flags.
+ *
+ * @param <T> the type of ClassVisitor used for transformation
+ */
 public interface ITransformInfo<T extends ClassVisitor> {
 
+	/**
+	 * Creates the ClassVisitor used for transformation.
+	 *
+	 * @param classWriter lazy-initialized ClassWriter for output
+	 * @return the ClassVisitor instance
+	 */
 	T visitor(Lazy<ClassWriter> classWriter);
 
+	/**
+	 * Performs the transformation using the visitor.
+	 *
+	 * @param classVisitor the visitor that received the class data
+	 * @param classWriter lazy-initialized ClassWriter for output
+	 * @return true if transformation was applied, false otherwise
+	 */
 	boolean transform(T classVisitor, Lazy<ClassWriter> classWriter);
 
+	/**
+	 * Returns ClassWriter flags for bytecode generation.
+	 *
+	 * @return flags such as COMPUTE_FRAMES or COMPUTE_MAXS
+	 */
 	int writeFlags();
 
+	/**
+	 * Returns ClassReader flags for bytecode parsing.
+	 *
+	 * @return flags such as SKIP_FRAMES or SKIP_DEBUG
+	 */
 	int readFlags();
 
 	static <T extends ClassVisitor> ITransformInfo<T> create(Supplier<T> classVisitorFactory,

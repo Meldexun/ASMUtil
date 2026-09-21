@@ -9,15 +9,32 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 
+/**
+ * ArrayList that maintains elements in sorted order.
+ * Elements are inserted at the correct position to maintain sort order.
+ *
+ * @param <E> the element type
+ */
 @SuppressWarnings("serial")
 class SortedArrayList<E> extends ArrayList<E> {
 
 	private final Comparator<E> comparator;
 
+	/**
+	 * Creates a sorted list with the given comparator.
+	 *
+	 * @param comparator the comparator for sorting elements
+	 */
 	SortedArrayList(Comparator<E> comparator) {
 		this.comparator = comparator;
 	}
 
+	/**
+	 * Creates a sorted list using natural ordering for comparable elements.
+	 *
+	 * @param <T> the element type
+	 * @return a new sorted list
+	 */
 	static <T extends Comparable<T>> SortedArrayList<T> create() {
 		return new SortedArrayList<T>(Comparator.naturalOrder());
 	}

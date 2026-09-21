@@ -13,6 +13,9 @@ import java.util.function.Consumer;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.InsnList;
 
+/**
+ * Spliterator for iterating over an instruction list for use with streams.
+ */
 class InsnSpliterator implements Spliterator<AbstractInsnNode> {
 
 	private final InsnList instructions;

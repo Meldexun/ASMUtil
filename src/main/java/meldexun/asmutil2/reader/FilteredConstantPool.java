@@ -9,6 +9,10 @@ import java.io.DataInput;
 import java.io.IOException;
 import java.util.Arrays;
 
+/**
+ * Lightweight constant pool that stores only selected constants from a class file.
+ * Used for efficient reading of class hierarchy information without parsing the entire constant pool.
+ */
 class FilteredConstantPool {
 
 	private int[] keys = new int[8];

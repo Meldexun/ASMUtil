@@ -22,19 +22,40 @@ import org.objectweb.asm.Opcodes;
 
 import meldexun.asmutil2.ClassTransformException;
 
+/**
+ * Utility for reading class information without loading classes.
+ * Used by {@link meldexun.asmutil2.NonLoadingClassWriter} to compute type hierarchies
+ * for frame calculation without triggering class loading.
+ */
 public final class ClassUtil {
 
+	/**
+	 * Configuration for class reading including ClassLoader and obfuscation mappings.
+	 */
 	public static final class Configuration {
 
+		/** Default configuration using the current ClassLoader */
 		public static final Configuration DEFAULT = new Configuration(Configuration.class.getClassLoader());
 		private final ClassLoader classLoader;
 		private final Map<String, String> obfuscationMap;
 		private final Map<String, String> deobfuscationMap;
 
+		/**
+		 * Creates a configuration with the given ClassLoader.
+		 *
+		 * @param classLoader the ClassLoader to use for finding class files
+		 */
 		public Configuration(ClassLoader classLoader) {
 			this(classLoader, null, null);
 		}
 
+		/**
+		 * Creates a configuration with ClassLoader and obfuscation mappings.
+		 *
+		 * @param classLoader the ClassLoader to use for finding class files
+		 * @param obfuscationMap map from deobfuscated to obfuscated class names
+		 * @param deobfuscationMap map from obfuscated to deobfuscated class names
+		 */
 		public Configuration(ClassLoader classLoader, Map<String, String> obfuscationMap,
 				Map<String, String> deobfuscationMap) {
 			this.classLoader = Objects.requireNonNull(classLoader);
@@ -65,6 +86,12 @@ public final class ClassUtil {
 			return h;
 		}
 
+		/**
+		 * Converts a deobfuscated class name to its obfuscated form.
+		 *
+		 * @param className the deobfuscated class name
+		 * @return the obfuscated class name, or the input if no mapping exists
+		 */
 		public String obfuscate(String className) {
 			if (this.obfuscationMap == null || this.obfuscationMap.isEmpty()) {
 				return className;
@@ -80,6 +107,12 @@ public final class ClassUtil {
 			return className;
 		}
 
+		/**
+		 * Converts an obfuscated class name to its deobfuscated form.
+		 *
+		 * @param className the obfuscated class name
+		 * @return the deobfuscated class name, or the input if no mapping exists
+		 */
 		public String deobfuscate(String className) {
 			if (this.deobfuscationMap == null || this.deobfuscationMap.isEmpty()) {
 				return className;
@@ -98,6 +131,7 @@ public final class ClassUtil {
 	}
 
 	private static final Map<Configuration, ClassUtil> INSTANCES = new ConcurrentHashMap<>();
+	/** Default ClassUtil instance */
 	public static final ClassUtil DEFAULT = ClassUtil.getInstance(Configuration.DEFAULT);
 	private static final String OBJECT_CLASS_NAME = Object.class.getName().replace('.', '/');
 	private final Configuration configuration;
@@ -107,10 +141,24 @@ public final class ClassUtil {
 		this.configuration = configuration;
 	}
 
+	/**
+	 * Gets or creates a ClassUtil instance for the given configuration.
+	 *
+	 * @param configuration the configuration to use
+	 * @return a ClassUtil instance
+	 */
 	public static ClassUtil getInstance(Configuration configuration) {
 		return INSTANCES.computeIfAbsent(configuration, ClassUtil::new);
 	}
 
+	/**
+	 * Searches the class hierarchy for a class matching the filter.
+	 * Checks the class itself, then its superclasses, then interfaces.
+	 *
+	 * @param className the class to start searching from
+	 * @param filter predicate to test class names
+	 * @return the first matching class name, or null if none match
+	 */
 	public String findInClassHierarchy(String className, Predicate<String> filter) {
 		String r1 = this.findClass(className, filter);
 		if (r1 != null) {
