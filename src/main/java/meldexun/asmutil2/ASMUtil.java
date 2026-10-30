@@ -28,6 +28,7 @@ import java.util.stream.StreamSupport;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.FieldInsnNode;
@@ -475,11 +476,14 @@ public class ASMUtil {
 	}
 
 	public static void addLocalVariable(MethodNode methodNode, String name, String desc, LabelNode start, LabelNode end) {
-		int i = 0;
+		// first slot after the parameters, maxLocals and all table entries (long and double take two slots)
+		int i = Type.getArgumentsAndReturnSizes(methodNode.desc) >> 2;
+		if ((methodNode.access & Opcodes.ACC_STATIC) != 0) {
+			i--;
+		}
+		i = Math.max(i, methodNode.maxLocals);
 		for (LocalVariableNode localVariable : methodNode.localVariables) {
-			if (localVariable.index >= i) {
-				i = localVariable.index + 1;
-			}
+			i = Math.max(i, localVariable.index + Type.getType(localVariable.desc).getSize());
 		}
 		methodNode.localVariables.add(new LocalVariableNode(name, desc, null, start, end, i));
 	}
