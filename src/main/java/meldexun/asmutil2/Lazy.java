@@ -8,7 +8,7 @@ package meldexun.asmutil2;
 import java.util.Objects;
 import java.util.function.Supplier;
 
-class Lazy<T> implements Supplier<T> {
+public class Lazy<T> implements Supplier<T> {
 
 	private Supplier<T> supplier;
 	private T value;
