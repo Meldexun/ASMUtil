@@ -8,6 +8,13 @@ package meldexun.asmutil2;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+/**
+ * Base class for iterators whose end is signalled by {@link #computeNext(Object)} returning {@code null}, so they
+ * cannot contain null elements. {@code computeNext} receives the previously returned element ({@code null} on the
+ * first call), which makes linked structures easy to iterate.
+ *
+ * @param <E> the element type
+ */
 abstract class NonNullIterator<E> implements Iterator<E> {
 
 	private enum State {

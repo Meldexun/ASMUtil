@@ -22,19 +22,52 @@ import org.objectweb.asm.Opcodes;
 
 import meldexun.asmutil2.ClassTransformException;
 
+/**
+ * Looks up class hierarchies by reading only the header (name, super class, interfaces) of class files found through
+ * a class loader, without loading the classes. Results are cached per instance. Used by
+ * {@link meldexun.asmutil2.NonLoadingClassWriter}, and also useful on its own to check whether a class being
+ * transformed extends or implements something:
+ *
+ * <pre>
+ * boolean isList = ClassUtil.DEFAULT.findInClassHierarchy("com/example/Foo", "java/util/List"::equals) != null;
+ * </pre>
+ *
+ * All class names are internal names ({@code com/example/Foo}).
+ */
 public final class ClassUtil {
 
+	/**
+	 * Where class files are read from, and optionally how class names are mapped. Mappings are needed when the code
+	 * being written refers to classes by different names than the class files on the class path have, e.g. when
+	 * transformers see deobfuscated names but the class files are obfuscated.
+	 */
 	public static final class Configuration {
 
+		/** Reads class files through the class loader that loaded this library, without mappings. */
 		public static final Configuration DEFAULT = new Configuration(Configuration.class.getClassLoader());
 		private final ClassLoader classLoader;
 		private final Map<String, String> obfuscationMap;
 		private final Map<String, String> deobfuscationMap;
 
+		/**
+		 * Creates a configuration without mappings.
+		 *
+		 * @param classLoader the ClassLoader used to find class files via {@link ClassLoader#getResource(String)}
+		 */
 		public Configuration(ClassLoader classLoader) {
 			this(classLoader, null, null);
 		}
 
+		/**
+		 * Creates a configuration with mappings. Maps use internal names; inner classes without an own entry are
+		 * mapped by their outer class.
+		 *
+		 * @param classLoader the ClassLoader used to find class files via {@link ClassLoader#getResource(String)}
+		 * @param obfuscationMap deobfuscated to obfuscated names, used to find the class file for a requested name,
+		 *        or {@code null}
+		 * @param deobfuscationMap obfuscated to deobfuscated names, applied to the names read from class files, or
+		 *        {@code null}
+		 */
 		public Configuration(ClassLoader classLoader, Map<String, String> obfuscationMap,
 				Map<String, String> deobfuscationMap) {
 			this.classLoader = Objects.requireNonNull(classLoader);
@@ -65,6 +98,13 @@ public final class ClassUtil {
 			return h;
 		}
 
+		/**
+		 * Maps a deobfuscated internal class name to its obfuscated form. For inner classes without an own mapping
+		 * the outer class is mapped and the {@code $...} suffix kept.
+		 *
+		 * @param className the deobfuscated class name
+		 * @return the obfuscated class name, or the input if no mapping exists
+		 */
 		public String obfuscate(String className) {
 			if (this.obfuscationMap == null || this.obfuscationMap.isEmpty()) {
 				return className;
@@ -80,6 +120,13 @@ public final class ClassUtil {
 			return className;
 		}
 
+		/**
+		 * Maps an obfuscated internal class name to its deobfuscated form. For inner classes without an own mapping
+		 * the outer class is mapped and the {@code $...} suffix kept.
+		 *
+		 * @param className the obfuscated class name
+		 * @return the deobfuscated class name, or the input if no mapping exists
+		 */
 		public String deobfuscate(String className) {
 			if (this.deobfuscationMap == null || this.deobfuscationMap.isEmpty()) {
 				return className;
@@ -98,6 +145,7 @@ public final class ClassUtil {
 	}
 
 	private static final Map<Configuration, ClassUtil> INSTANCES = new ConcurrentHashMap<>();
+	/** Instance for {@link Configuration#DEFAULT}. */
 	public static final ClassUtil DEFAULT = ClassUtil.getInstance(Configuration.DEFAULT);
 	private static final String OBJECT_CLASS_NAME = Object.class.getName().replace('.', '/');
 	private final Configuration configuration;
@@ -107,10 +155,28 @@ public final class ClassUtil {
 		this.configuration = configuration;
 	}
 
+	/**
+	 * Returns the instance for the given configuration, creating it on first use. Instances (and their caches) are
+	 * kept forever, so reuse configurations instead of creating new ones per call.
+	 *
+	 * @param configuration the configuration to use
+	 * @return the shared instance for this configuration
+	 */
 	public static ClassUtil getInstance(Configuration configuration) {
 		return INSTANCES.computeIfAbsent(configuration, ClassUtil::new);
 	}
 
+	/**
+	 * Searches the class itself and all its super types for one accepted by {@code filter}. The order is: the class
+	 * and its super classes (nearest first), then the interfaces of each of them (depth first), then
+	 * {@code java/lang/Object}. Array types are treated as direct subclasses of {@code java/lang/Object}.
+	 *
+	 * @param className the internal name of the class to start at
+	 * @param filter predicate to test internal class names
+	 * @return the first accepted class name, or {@code null} if none is accepted
+	 * @throws java.util.MissingResourceException if the class file of a class in the hierarchy can't be found
+	 * @throws meldexun.asmutil2.ClassTransformException if a class file can't be read
+	 */
 	public String findInClassHierarchy(String className, Predicate<String> filter) {
 		String r1 = this.findClass(className, filter);
 		if (r1 != null) {
