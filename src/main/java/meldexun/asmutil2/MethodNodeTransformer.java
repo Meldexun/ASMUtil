@@ -208,7 +208,7 @@ public class MethodNodeTransformer {
 				if (matches < minMatches) {
 					StringBuilder sb = new StringBuilder();
 					sb.append("Found less method transform targets than expected!");
-					sb.append(" ").append("minMatches").append(minMatches);
+					sb.append(" ").append("minMatches=").append(minMatches);
 					sb.append(" ").append("maxMatches=").append(maxMatches);
 					sb.append(" ").append("matches=").append(matches);
 					if (errorDetailAppender != null) {
