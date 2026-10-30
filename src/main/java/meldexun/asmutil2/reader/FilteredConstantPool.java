@@ -48,7 +48,7 @@ class FilteredConstantPool {
 
 	Object get(int k) {
 		int i = Arrays.binarySearch(this.keys, 0, this.size, k);
-		return i != -1 ? this.values[i] : null;
+		return i >= 0 ? this.values[i] : null;
 	}
 
 	String getClass(int i) {
